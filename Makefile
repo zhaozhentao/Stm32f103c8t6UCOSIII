@@ -53,12 +53,35 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c \
 Core/Src/system_stm32f1xx.c \
 Core/Src/sysmem.c \
 Core/Src/syscalls.c \
-BSP/add.c
+APP/os_app_hooks.c \
+Middlewares/uC-CPU/cpu_core.c \
+Middlewares/uC-CPU/ARM-Cortex-M3/RealView/cpu_c.c \
+Middlewares/uCOS-III/Ports/ARM-Cortex-M3/Generic/RealView/os_cpu_c.c \
+Middlewares/uCOS-III/Source/os_cfg_app.c \
+Middlewares/uCOS-III/Source/os_core.c \
+Middlewares/uCOS-III/Source/os_dbg.c \
+Middlewares/uCOS-III/Source/os_flag.c \
+Middlewares/uCOS-III/Source/os_int.c \
+Middlewares/uCOS-III/Source/os_mem.c \
+Middlewares/uCOS-III/Source/os_msg.c \
+Middlewares/uCOS-III/Source/os_mutex.c \
+Middlewares/uCOS-III/Source/os_pend_multi.c \
+Middlewares/uCOS-III/Source/os_prio.c \
+Middlewares/uCOS-III/Source/os_q.c \
+Middlewares/uCOS-III/Source/os_sem.c \
+Middlewares/uCOS-III/Source/os_stat.c \
+Middlewares/uCOS-III/Source/os_task.c \
+Middlewares/uCOS-III/Source/os_tick.c \
+Middlewares/uCOS-III/Source/os_time.c \
+Middlewares/uCOS-III/Source/os_tmr.c \
+Middlewares/uCOS-III/Source/os_var.c
 
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f103xb.s
+startup_stm32f103xb.s \
+Middlewares/uCOS-III/Ports/ARM-Cortex-M3/Generic/RealView/os_cpu_a.s \
+Middlewares/uC-CPU/ARM-Cortex-M3/RealView/cpu_a.s
 
 # ASMM sources
 ASMM_SOURCES = 
@@ -120,7 +143,14 @@ C_INCLUDES =  \
 -IDrivers/STM32F1xx_HAL_Driver/Inc \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
 -IDrivers/CMSIS/Include \
--IBSP
+-IBSP \
+-IBSP/led \
+-IAPP \
+-IMiddlewares/uC-CPU/ARM-Cortex-M3/RealView \
+-IMiddlewares/uC-CPU \
+-IMiddlewares/uC-LIB \
+-IMiddlewares/uCOS-III/Source \
+-IMiddlewares/uCOS-III/Ports/ARM-Cortex-M3/Generic/RealView
 
 
 # compile gcc flags
