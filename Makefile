@@ -74,7 +74,8 @@ Middlewares/uCOS-III/Source/os_task.c \
 Middlewares/uCOS-III/Source/os_tick.c \
 Middlewares/uCOS-III/Source/os_time.c \
 Middlewares/uCOS-III/Source/os_tmr.c \
-Middlewares/uCOS-III/Source/os_var.c
+Middlewares/uCOS-III/Source/os_var.c \
+BSP/bsp.c
 
 
 # ASM sources

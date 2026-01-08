@@ -1,7 +1,8 @@
 #define  BSP_MODULE
+
 #include <bsp.h>
 
-CPU_INT32U  BSP_CPU_ClkFreq_MHz;
+CPU_INT32U BSP_CPU_ClkFreq_MHz;
 
 #define  DWT_CR      *(CPU_REG32 *)0xE0001000
 #define  DWT_CYCCNT  *(CPU_REG32 *)0xE0001004
@@ -19,31 +20,19 @@ CPU_INT32U  BSP_CPU_ClkFreq_MHz;
 
 #define  DWT_CR_CYCCNTENA                (1 <<  0)
 
-void  BSP_Init (void)
-{
-    LED_Init ();
-
-}
-
-CPU_INT32U  BSP_CPU_ClkFreq (void)
-{
-    RCC_ClocksTypeDef  rcc_clocks;
-
-
-    RCC_GetClocksFreq(&rcc_clocks);
-
-    return ((CPU_INT32U)rcc_clocks.HCLK_Frequency);
+CPU_INT32U BSP_CPU_ClkFreq(void) {
+    return (CPU_INT32U)HAL_RCC_GetHCLKFreq();
 }
 
 #if ((APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && \
-    (OS_PROBE_HOOKS_EN          == 1))
+    (OS_PROBE_HOOKS_EN == 1))
 void  OSProbe_TmrInit (void)
 {
 }
 #endif
 
 #if ((APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && \
-    (OS_PROBE_HOOKS_EN          == 1))
+    (OS_PROBE_HOOKS_EN == 1))
 CPU_INT32U  OSProbe_TmrRd (void)
 {
     return ((CPU_INT32U)DWT_CYCCNT);
@@ -52,23 +41,24 @@ CPU_INT32U  OSProbe_TmrRd (void)
 
 
 #if (CPU_CFG_TS_TMR_EN == DEF_ENABLED)
-void  CPU_TS_TmrInit (void)
-{
-    CPU_INT32U  cpu_clk_freq_hz;
 
+void CPU_TS_TmrInit(void) {
+    CPU_INT32U cpu_clk_freq_hz;
 
-    DEM_CR         |= (CPU_INT32U)DEM_CR_TRCENA;
-    DWT_CYCCNT      = (CPU_INT32U)0u;
-    DWT_CR         |= (CPU_INT32U)DWT_CR_CYCCNTENA;
+    DEM_CR |= (CPU_INT32U)DEM_CR_TRCENA;
+    DWT_CYCCNT = (CPU_INT32U) 0u;
+    DWT_CR |= (CPU_INT32U)DWT_CR_CYCCNTENA;
 
     cpu_clk_freq_hz = BSP_CPU_ClkFreq();
     CPU_TS_TmrFreqSet(cpu_clk_freq_hz);
 }
+
 #endif
 
 #if (CPU_CFG_TS_TMR_EN == DEF_ENABLED)
-CPU_TS_TMR  CPU_TS_TmrRd (void)
-{
-    return ((CPU_TS_TMR)DWT_CYCCNT);
+
+CPU_TS_TMR CPU_TS_TmrRd(void) {
+    return ((CPU_TS_TMR) DWT_CYCCNT);
 }
+
 #endif
