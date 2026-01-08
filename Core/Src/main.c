@@ -1,6 +1,6 @@
 #include "main.h"
 
-#include  <os.h>
+#include <os.h>
 
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
