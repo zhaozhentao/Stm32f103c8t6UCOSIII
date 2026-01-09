@@ -1,5 +1,6 @@
 #include "main.h"
 #include <string.h>
+#include <stdio.h>
 
 #include <os.h>
 
@@ -12,6 +13,18 @@ CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
 
 UART_HandleTypeDef huart1;
 uint8_t rx_byte;
+
+#ifdef __GNUC__
+/* 使用 GCC 编译器 */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+
+PUTCHAR_PROTOTYPE {
+    HAL_UART_Transmit(&huart1, (uint8_t * ) & ch, 1, HAL_MAX_DELAY);
+    return ch;
+}
 
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -103,10 +116,8 @@ void LedTask(void *p_arg) {
 void UartTask() {
     OS_ERR err;
 
-    uint8_t send_str[] = "Hello STM32 UART1!\r\n";
-
     while (1) {
-        HAL_UART_Transmit(&huart1, send_str, strlen((char *) send_str), 100);
+        printf("hello ucos iii\r\n");
 
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
     }
