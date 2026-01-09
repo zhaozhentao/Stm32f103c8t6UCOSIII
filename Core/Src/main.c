@@ -73,14 +73,12 @@ int main(void) {
     HAL_Init();
     SystemClock_Config();
     GPIO_Init();
-//    HAL_SuspendTick();
+    // HAL_SuspendTick();
 
     OSInit(&err);
     if (err != OS_ERR_NONE) {
         while (1);
     }
-
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED 亮
 
     OSTaskCreate((OS_TCB * ) & LedTaskTCB,
                  (CPU_CHAR *) "LED Task",
@@ -97,6 +95,9 @@ int main(void) {
                  (OS_ERR *) 0);
 
     OSStart(&err);
+
+    while (1);
+    return 0;
 
 //    while (1) {
 //        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED 亮
