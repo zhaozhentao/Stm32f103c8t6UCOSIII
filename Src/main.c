@@ -1,30 +1,12 @@
 #include "main.h"
-#include <string.h>
-#include <stdio.h>
-
 #include <os.h>
-
-#define LED_TASK_STK_SIZE 128
-OS_TCB LedTaskTCB;
-CPU_STK LedTaskStk[LED_TASK_STK_SIZE];
-
-OS_TCB UartTaskTCB;
-CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
 
 UART_HandleTypeDef huart1;
 uint8_t rx_byte;
 
-#ifdef __GNUC__
-/* 使用 GCC 编译器 */
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif
+void createTask1(void);
 
-PUTCHAR_PROTOTYPE {
-    HAL_UART_Transmit(&huart1, (uint8_t * ) & ch, 1, HAL_MAX_DELAY);
-    return ch;
-}
+void createTask2(void);
 
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -76,7 +58,7 @@ void GPIO_Init(void) {
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 }
 
-static void MX_USART1_UART_Init(void) {
+void MX_USART1_UART_Init(void) {
 
     /* USER CODE BEGIN USART1_Init 0 */
 
@@ -98,29 +80,6 @@ static void MX_USART1_UART_Init(void) {
     }
     /* USER CODE BEGIN USART1_Init 2 */
     /* USER CODE END USART1_Init 2 */
-}
-
-void LedTask(void *p_arg) {
-    (void) p_arg;
-    OS_ERR err;
-
-    while (1) {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED 灭
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
-
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED 亮
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
-    }
-}
-
-void UartTask() {
-    OS_ERR err;
-
-    while (1) {
-        printf("hello ucos iii\r\n");
-
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
-    }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
@@ -154,33 +113,9 @@ int main(void) {
         while (1);
     }
 
-    OSTaskCreate((OS_TCB * ) & LedTaskTCB,
-                 (CPU_CHAR *) "LED Task",
-                 (OS_TASK_PTR) LedTask,
-                 (void *) 0,
-                 (OS_PRIO) 5,
-                 (CPU_STK * ) & LedTaskStk[0],
-                 (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
-                 (CPU_STK_SIZE) LED_TASK_STK_SIZE,
-                 (OS_MSG_QTY) 0,
-                 (OS_TICK) 0,
-                 (void *) 0,
-                 (OS_OPT)(OS_OPT_TASK_STK_CLR),
-                 (OS_ERR *) 0);
+    createTask1();
 
-    OSTaskCreate((OS_TCB * ) & UartTaskTCB,
-                 (CPU_CHAR *) "Uart Task",
-                 (OS_TASK_PTR) UartTask,
-                 (void *) 0,
-                 (OS_PRIO) 6,
-                 (CPU_STK * ) & UartTaskStk[0],
-                 (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
-                 (CPU_STK_SIZE) LED_TASK_STK_SIZE,
-                 (OS_MSG_QTY) 0,
-                 (OS_TICK) 0,
-                 (void *) 0,
-                 (OS_OPT)(OS_OPT_TASK_STK_CLR),
-                 (OS_ERR *) 0);
+    createTask2();
 
     OSStart(&err);
 
