@@ -71,9 +71,10 @@ int main(void) {
     OS_ERR err;
 
     HAL_Init();
+
     SystemClock_Config();
+
     GPIO_Init();
-    // HAL_SuspendTick();
 
     OSInit(&err);
     if (err != OS_ERR_NONE) {
@@ -97,15 +98,6 @@ int main(void) {
     OSStart(&err);
 
     while (1);
-    return 0;
-
-//    while (1) {
-//        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED 亮
-//        HAL_Delay(500);
-//
-//        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED 灭
-//        HAL_Delay(500);
-//    }
 }
 
 void Error_Handler(void) {
