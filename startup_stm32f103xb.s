@@ -226,12 +226,6 @@ g_pfnVectors:
   .weak DebugMon_Handler
   .thumb_set DebugMon_Handler,Default_Handler
 
-  .weak OS_CPU_PendSVHandler
-  .thumb_set OS_CPU_PendSVHandler,Default_Handler
-
-  .weak OS_CPU_SysTickHandler
-  .thumb_set OS_CPU_SysTickHandler,Default_Handler
-
   .weak WWDG_IRQHandler
   .thumb_set WWDG_IRQHandler,Default_Handler
 
