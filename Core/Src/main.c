@@ -59,11 +59,11 @@ void LedTask(void *p_arg) {
     OS_ERR err;
 
     while (1) {
-//        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED 灭
-//        OSTimeDlyHMSM(0, 0, 0, 500, OS_OPT_TIME_DLY, &err);
-//
-//        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED 亮
-//        OSTimeDlyHMSM(0, 0, 0, 500, OS_OPT_TIME_DLY, &err);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED 灭
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED 亮
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
     }
 }
 
