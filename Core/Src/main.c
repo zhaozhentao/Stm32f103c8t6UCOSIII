@@ -1,10 +1,14 @@
 #include "main.h"
+#include <string.h>
 
 #include <os.h>
 
 #define LED_TASK_STK_SIZE 128
 OS_TCB LedTaskTCB;
 CPU_STK LedTaskStk[LED_TASK_STK_SIZE];
+
+OS_TCB UartTaskTCB;
+CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
 
 UART_HandleTypeDef huart1;
 uint8_t rx_byte;
@@ -96,6 +100,18 @@ void LedTask(void *p_arg) {
     }
 }
 
+void UartTask() {
+    OS_ERR err;
+
+    uint8_t send_str[] = "Hello STM32 UART1!\r\n";
+
+    while (1) {
+        HAL_UART_Transmit(&huart1, send_str, strlen((char *) send_str), 100);
+
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+    }
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == USART1) {
         // ⭐ 接收到 1 字节，做你想做的事
@@ -116,7 +132,6 @@ int main(void) {
     OS_ERR err;
 
     HAL_Init();
-
     SystemClock_Config();
 
     GPIO_Init();
@@ -134,6 +149,20 @@ int main(void) {
                  (void *) 0,
                  (OS_PRIO) 5,
                  (CPU_STK * ) & LedTaskStk[0],
+                 (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
+                 (CPU_STK_SIZE) LED_TASK_STK_SIZE,
+                 (OS_MSG_QTY) 0,
+                 (OS_TICK) 0,
+                 (void *) 0,
+                 (OS_OPT)(OS_OPT_TASK_STK_CLR),
+                 (OS_ERR *) 0);
+
+    OSTaskCreate((OS_TCB * ) & UartTaskTCB,
+                 (CPU_CHAR *) "Uart Task",
+                 (OS_TASK_PTR) UartTask,
+                 (void *) 0,
+                 (OS_PRIO) 6,
+                 (CPU_STK * ) & UartTaskStk[0],
                  (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
                  (CPU_STK_SIZE) LED_TASK_STK_SIZE,
                  (OS_MSG_QTY) 0,
