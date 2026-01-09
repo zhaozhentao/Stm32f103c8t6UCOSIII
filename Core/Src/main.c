@@ -6,6 +6,9 @@
 OS_TCB LedTaskTCB;
 CPU_STK LedTaskStk[LED_TASK_STK_SIZE];
 
+UART_HandleTypeDef huart1;
+uint8_t rx_byte;
+
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -40,6 +43,8 @@ void SystemClock_Config(void) {
 }
 
 void GPIO_Init(void) {
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -52,6 +57,30 @@ void GPIO_Init(void) {
 
     // 默认设置为高电平（LED 灭）
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+}
+
+static void MX_USART1_UART_Init(void) {
+
+    /* USER CODE BEGIN USART1_Init 0 */
+
+    /* USER CODE END USART1_Init 0 */
+
+    /* USER CODE BEGIN USART1_Init 1 */
+
+    /* USER CODE END USART1_Init 1 */
+    huart1.Instance = USART1;
+    huart1.Init.BaudRate = 115200;
+    huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    huart1.Init.StopBits = UART_STOPBITS_1;
+    huart1.Init.Parity = UART_PARITY_NONE;
+    huart1.Init.Mode = UART_MODE_TX_RX;
+    huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+    if (HAL_UART_Init(&huart1) != HAL_OK) {
+        Error_Handler();
+    }
+    /* USER CODE BEGIN USART1_Init 2 */
+    /* USER CODE END USART1_Init 2 */
 }
 
 void LedTask(void *p_arg) {
@@ -67,6 +96,22 @@ void LedTask(void *p_arg) {
     }
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART1) {
+        // ⭐ 接收到 1 字节，做你想做的事
+        HAL_UART_Transmit(&huart1, &rx_byte, 1, 10);  // 回显
+
+        if (rx_byte == 'w') {
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+        } else {
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+        }
+
+        // ⭐ 重新打开中断接收，否则只能接收一次
+        HAL_UART_Receive_IT(&huart1, &rx_byte, 1);
+    }
+}
+
 int main(void) {
     OS_ERR err;
 
@@ -75,6 +120,8 @@ int main(void) {
     SystemClock_Config();
 
     GPIO_Init();
+    MX_USART1_UART_Init();
+    HAL_UART_Receive_IT(&huart1, &rx_byte, 1);
 
     OSInit(&err);
     if (err != OS_ERR_NONE) {
