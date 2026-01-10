@@ -6,8 +6,7 @@
 OS_TCB LedTaskTCB;
 CPU_STK LedTaskStk[LED_TASK_STK_SIZE];
 
-void LedTask(void *p_arg) {
-    (void) p_arg;
+void LedTask() {
     OS_ERR err;
 
     while (1) {

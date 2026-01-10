@@ -4,9 +4,9 @@
 UART_HandleTypeDef huart1;
 uint8_t rx_byte;
 
-void createTask1(void);
+void createTask1();
 
-void createTask2(void);
+void createTask2();
 
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
