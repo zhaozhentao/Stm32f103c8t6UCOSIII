@@ -7,14 +7,34 @@ OS_TCB LedTaskTCB;
 CPU_STK LedTaskStk[LED_TASK_STK_SIZE];
 
 void LedTask() {
+    const int MAX_BRIGHTNESS = 10;  // 最大亮度等级
     OS_ERR err;
+    int brightness = 0;             // 当前亮度
+    int direction = 1;              // 亮度变化方向: 1=增加, -1=减少
+    int counter = 0;                // 计数器，控制亮度变化频率
 
     while (1) {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED 灭
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+        // 设置LED亮度（通过GPIO模拟PWM效果）
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED亮
+        OSTimeDlyHMSM(0, 0, 0, brightness, OS_OPT_TIME_DLY, &err);
 
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED 亮
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+        // 熄灭LED，形成呼吸效果
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED灭
+        OSTimeDlyHMSM(0, 0, 0, MAX_BRIGHTNESS - brightness, OS_OPT_TIME_DLY, &err);
+
+        // 每隔几次循环才更新一次亮度，使变化更缓慢
+        counter++;
+        if (counter >= 5) {  // 每两次循环才改变一次亮度
+            brightness += direction;
+            counter = 0;
+        }
+
+        // 边界检测和方向切换
+        if (brightness >= MAX_BRIGHTNESS) {
+            direction = -1;  // 开始变暗
+        } else if (brightness <= 0) {
+            direction = 1;   // 开始变亮
+        }
     }
 }
 
