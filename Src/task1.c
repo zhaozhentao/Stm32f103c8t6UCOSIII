@@ -23,16 +23,17 @@ void LedTask() {
         OSTimeDlyHMSM(0, 0, 0, MAX_BRIGHTNESS - brightness, OS_OPT_TIME_DLY, &err);
 
         // 每隔几次循环才更新一次亮度，使变化更缓慢
-        counter++;
-        if (counter >= 5) {  // 每两次循环才改变一次亮度
-            brightness += direction;
-            counter = 0;
+        if (counter++ < 4) {  // 每两次循环才改变一次亮度
+            continue;
         }
+
+        brightness += direction;
+        counter = 0;
 
         // 边界检测和方向切换
         if (brightness >= MAX_BRIGHTNESS) {
             direction = -1;  // 开始变暗
-        } else if (brightness <= 0) {
+        } else if (brightness <= 1) {
             direction = 1;   // 开始变亮
         }
     }
