@@ -1,15 +1,14 @@
 #include "main.h"
 #include <os.h>
 #include "bsp.h"
+#include "gpio.h"
+#include "uart.h"
+#include "clock.h"
 
 extern UART_HandleTypeDef huart1;
 extern uint8_t rx_byte;
 
 void createInitTask();
-void GPIO_Init();
-void SystemClock_Config();
-void MX_USART1_UART_Init();
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 int main(void) {
     OS_ERR err;
@@ -32,13 +31,6 @@ int main(void) {
     OSStart(&err);
 
     while (1);
-}
-
-void Error_Handler(void) {
-    __disable_irq();
-    while (1) {
-
-    }
 }
 
 #ifdef USE_FULL_ASSERT

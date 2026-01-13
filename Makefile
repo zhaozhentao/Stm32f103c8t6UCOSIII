@@ -44,6 +44,7 @@ Src/init_task.c \
 Src/gpio.c \
 Src/clock.c \
 Src/uart.c \
+Src/error_handle.c \
 Core/Src/stm32f1xx_it.c \
 Core/Src/stm32f1xx_hal_msp.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
@@ -160,7 +161,8 @@ C_INCLUDES =  \
 -IMiddlewares/uC-CPU \
 -IMiddlewares/uC-LIB \
 -IMiddlewares/uCOS-III/Source \
--IMiddlewares/uCOS-III/Ports/ARM-Cortex-M3/Generic/RealView
+-IMiddlewares/uCOS-III/Ports/ARM-Cortex-M3/Generic/RealView \
+-ISrc/include \
 
 
 # compile gcc flags

@@ -1,9 +1,8 @@
 #include "stm32f1xx_hal.h"
+#include "error_handle.h"
 
 UART_HandleTypeDef huart1;
 uint8_t rx_byte;
-
-void Error_Handler();
 
 void MX_USART1_UART_Init(void) {
 

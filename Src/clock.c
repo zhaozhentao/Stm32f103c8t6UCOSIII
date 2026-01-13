@@ -1,6 +1,5 @@
 #include "stm32f1xx_hal.h"
-
-void Error_Handler();
+#include "error_handle.h"
 
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
