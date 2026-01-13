@@ -5,9 +5,6 @@
 #include "uart.h"
 #include "clock.h"
 
-extern UART_HandleTypeDef huart1;
-extern uint8_t rx_byte;
-
 void createInitTask();
 
 int main(void) {
@@ -15,7 +12,6 @@ int main(void) {
 
     HAL_Init();
     SystemClock_Config();
-
     GPIO_Init();
     MX_USART1_UART_Init();
     HAL_UART_Receive_IT(&huart1, &rx_byte, 1);

@@ -22,8 +22,6 @@
 
 #include  <app_cfg.h>
 
-void BSP_Init(void);
-
 CPU_INT32U BSP_CPU_ClkFreq(void);
 
 #endif                                                          /* End of module include.                               */
