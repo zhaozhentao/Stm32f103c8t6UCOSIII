@@ -8,7 +8,6 @@ extern OS_TCB LedTaskTCB;
 extern OS_TCB UartTaskTCB;
 
 static OS_TCB AppTaskStatusTCB;
-
 static CPU_STK AppTaskStatusStk[APP_TASK_STATUS_STK_SIZE];
 
 static void task(void *p_arg) {

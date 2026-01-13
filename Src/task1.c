@@ -6,7 +6,7 @@
 OS_TCB LedTaskTCB;
 CPU_STK LedTaskStk[LED_TASK_STK_SIZE];
 
-void LedTask() {
+static void task() {
     const int MAX_BRIGHTNESS = 10;  // 最大亮度等级
     OS_ERR err;
     int brightness = 0;             // 当前亮度
@@ -42,7 +42,7 @@ void LedTask() {
 void createTask1(void) {
     OSTaskCreate((OS_TCB * ) & LedTaskTCB,
                  (CPU_CHAR *) "LED Task",
-                 (OS_TASK_PTR) LedTask,
+                 (OS_TASK_PTR) task,
                  (void *) 0,
                  (OS_PRIO) 7,
                  (CPU_STK * ) & LedTaskStk[0],

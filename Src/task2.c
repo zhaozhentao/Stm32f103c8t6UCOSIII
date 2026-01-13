@@ -21,7 +21,7 @@ PUTCHAR_PROTOTYPE {
     return ch;
 }
 
-void UartTask() {
+static void task() {
     OS_ERR err;
 
     while (1) {
@@ -34,7 +34,7 @@ void UartTask() {
 void createTask2() {
     OSTaskCreate((OS_TCB * ) & UartTaskTCB,
                  (CPU_CHAR *) "Uart Task",
-                 (OS_TASK_PTR) UartTask,
+                 (OS_TASK_PTR) task,
                  (void *) 0,
                  (OS_PRIO) 8,
                  (CPU_STK * ) & UartTaskStk[0],
