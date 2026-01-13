@@ -41,6 +41,9 @@ Src/task1.c \
 Src/task2.c \
 Src/cpu_task.c \
 Src/init_task.c \
+Src/gpio.c \
+Src/clock.c \
+Src/uart.c \
 Core/Src/stm32f1xx_it.c \
 Core/Src/stm32f1xx_hal_msp.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
