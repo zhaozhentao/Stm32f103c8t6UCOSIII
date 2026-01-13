@@ -14,6 +14,10 @@ void LedTask() {
     int counter = 0;                // 计数器，控制亮度变化频率
 
     while (1) {
+
+    }
+
+    while (1) {
         // 设置LED亮度（通过GPIO模拟PWM效果）
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED亮
         OSTimeDlyHMSM(0, 0, 0, brightness, OS_OPT_TIME_DLY, &err);

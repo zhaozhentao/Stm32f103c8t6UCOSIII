@@ -11,6 +11,8 @@ void createTask2();
 
 void createCPUTask();
 
+void createInitTask();
+
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -102,8 +104,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 int main(void) {
-    CPU_INT32U cpu_clk_freq;
-    CPU_INT32U cnts;
     OS_ERR err;
 
     HAL_Init();
@@ -112,14 +112,6 @@ int main(void) {
     GPIO_Init();
     MX_USART1_UART_Init();
     HAL_UART_Receive_IT(&huart1, &rx_byte, 1);
-
-    CPU_Init();
-    Mem_Init();
-    cpu_clk_freq = BSP_CPU_ClkFreq();                           /* Determine SysTick reference freq.                    */
-    cnts = cpu_clk_freq /
-           (CPU_INT32U) OSCfg_TickRate_Hz;        /* Determine nbr SysTick increments                     */
-    OS_CPU_SysTickInit(cnts);
-    CPU_IntDisMeasMaxCurReset();
 
     OSInit(&err);
     if (err != OS_ERR_NONE) {
@@ -131,6 +123,8 @@ int main(void) {
     createTask2();
 
     createCPUTask();
+
+    createInitTask();
 
     OSStart(&err);
 
