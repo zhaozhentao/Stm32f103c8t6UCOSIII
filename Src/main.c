@@ -5,12 +5,6 @@
 UART_HandleTypeDef huart1;
 uint8_t rx_byte;
 
-void createTask1();
-
-void createTask2();
-
-void createCPUTask();
-
 void createInitTask();
 
 void SystemClock_Config(void) {
@@ -114,15 +108,10 @@ int main(void) {
     HAL_UART_Receive_IT(&huart1, &rx_byte, 1);
 
     OSInit(&err);
+
     if (err != OS_ERR_NONE) {
         while (1);
     }
-
-    createTask1();
-
-    createTask2();
-
-    createCPUTask();
 
     createInitTask();
 

@@ -1,10 +1,14 @@
 #include <os.h>
-#include <stdio.h>
 #include "bsp.h"
-#include "stm32f1xx_hal.h"
 
-#define  APP_TASK_STATUS_PRIO                       2
+#define  APP_TASK_STATUS_PRIO                       5
 #define  APP_TASK_STATUS_STK_SIZE                   128
+
+void createTask1();
+
+void createTask2();
+
+void createCPUTask();
 
 static OS_TCB AppTaskStartTCB;
 
@@ -25,11 +29,15 @@ static void task() {
 
     OSStatTaskCPUUsageInit(&err);
 
-    printf("OSStatTaskCPUUsageInit\r\n");
-
     CPU_IntDisMeasMaxCurReset();
 
-    OSTaskDel ( & AppTaskStartTCB, & err );
+    createTask1();
+
+    createTask2();
+
+    createCPUTask();
+
+    OSTaskDel(&AppTaskStartTCB, &err);
 }
 
 void createInitTask() {

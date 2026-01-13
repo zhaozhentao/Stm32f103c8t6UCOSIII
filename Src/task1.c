@@ -48,7 +48,7 @@ void createTask1(void) {
                  (CPU_CHAR *) "LED Task",
                  (OS_TASK_PTR) LedTask,
                  (void *) 0,
-                 (OS_PRIO) 5,
+                 (OS_PRIO) 7,
                  (CPU_STK * ) & LedTaskStk[0],
                  (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
                  (CPU_STK_SIZE) LED_TASK_STK_SIZE,
