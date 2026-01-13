@@ -1,5 +1,4 @@
 #include <os.h>
-#include "stm32f1xx_hal.h"
 #include <stdio.h>
 
 #define  APP_TASK_STATUS_PRIO                       6
@@ -12,10 +11,8 @@ static OS_TCB AppTaskStatusTCB;
 
 static CPU_STK AppTaskStatusStk[APP_TASK_STATUS_STK_SIZE];
 
-void AppTaskStatus(void *p_arg) {
+static void task(void *p_arg) {
     OS_ERR err;
-
-//    CPU_SR_ALLOC();
 
     (void) p_arg;
 
@@ -31,7 +28,7 @@ void createCPUTask(void) {
 
     OSTaskCreate((OS_TCB * ) & AppTaskStatusTCB,
                  (CPU_CHAR *) "App Task Status",
-                 (OS_TASK_PTR) AppTaskStatus,
+                 (OS_TASK_PTR) task,
                  (void *) 0,
                  (OS_PRIO) APP_TASK_STATUS_PRIO,
                  (CPU_STK * ) & AppTaskStatusStk[0],
