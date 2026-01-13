@@ -21,7 +21,7 @@
 
 
 /* 是否使用测量CPU禁用中断的时间  */
-#if 0
+#if 1
 #define  CPU_CFG_INT_DIS_MEAS_EN
 #endif
 /* 配置测量的次数*/

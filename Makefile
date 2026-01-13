@@ -39,6 +39,7 @@ C_SOURCES =  \
 Src/main.c \
 Src/task1.c \
 Src/task2.c \
+Src/cpu_task.c \
 Core/Src/stm32f1xx_it.c \
 Core/Src/stm32f1xx_hal_msp.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
@@ -78,6 +79,7 @@ Middlewares/uCOS-III/Source/os_tick.c \
 Middlewares/uCOS-III/Source/os_time.c \
 Middlewares/uCOS-III/Source/os_tmr.c \
 Middlewares/uCOS-III/Source/os_var.c \
+Middlewares/uC-LIB/lib_mem.c \
 BSP/bsp.c
 
 
