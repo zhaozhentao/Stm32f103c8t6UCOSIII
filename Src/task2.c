@@ -25,7 +25,7 @@ void UartTask() {
     OS_ERR err;
 
     while (1) {
-//        printf("hello ucos iii\r\n");
+        printf("hello ucos iii\r\n");
 
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
     }
