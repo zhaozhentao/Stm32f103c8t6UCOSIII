@@ -3,6 +3,9 @@
 
 UART_HandleTypeDef huart1;
 uint8_t rx_byte;
+uint8_t rx_buf[256];
+uint16_t rx_len = 0;
+uint8_t uart_rx_finished = 0;
 
 void MX_USART1_UART_Init(void) {
 
@@ -29,18 +32,19 @@ void MX_USART1_UART_Init(void) {
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance == USART1) {
-        // ⭐ 接收到 1 字节，做你想做的事
-        HAL_UART_Transmit(&huart1, &rx_byte, 1, 10);  // 回显
-
-        if (rx_byte == 'w') {
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-        } else {
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-        }
-
-        // ⭐ 重新打开中断接收，否则只能接收一次
-        HAL_UART_Receive_IT(&huart1, &rx_byte, 1);
+    if (huart->Instance != USART1) {
+        return;
     }
+
+    rx_buf[rx_len++] = rx_byte;
+
+    if (rx_len >= sizeof(rx_buf)) rx_len = 0;
+
+    // 如果遇到换行符，认为一条返回结束
+    if (rx_byte == '\n') {
+        uart_rx_finished = 1;
+    }
+
+    HAL_UART_Receive_IT(&huart1, &rx_byte, 1); // 继续接收
 }
 

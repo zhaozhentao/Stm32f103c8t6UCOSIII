@@ -16,8 +16,6 @@ static void task(void *p_arg) {
     (void) p_arg;
 
     while (1) {
-        printf("CPU利用率：%d.%d%%\r\n", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
-
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_PERIODIC, &err);
     }
 }

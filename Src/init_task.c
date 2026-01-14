@@ -25,7 +25,7 @@ static void task() {
     cnts = cpu_clk_freq / (CPU_INT32U) OSCfg_TickRate_Hz;
     OS_CPU_SysTickInit(cnts);
 
-    Mem_Init();
+//    Mem_Init();
 
     OSStatTaskCPUUsageInit(&err);
 
