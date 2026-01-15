@@ -2,6 +2,8 @@
 #include "error_handle.h"
 
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
+
 uint8_t rx_byte;
 uint8_t rx_buf[256];
 uint16_t rx_len = 0;
@@ -29,6 +31,20 @@ void MX_USART1_UART_Init(void) {
     }
     /* USER CODE BEGIN USART1_Init 2 */
     /* USER CODE END USART1_Init 2 */
+}
+
+void MX_USART2_UART_Init(void) {
+    huart2.Instance = USART2;
+    huart2.Init.BaudRate = 115200;
+    huart2.Init.WordLength = UART_WORDLENGTH_8B;
+    huart2.Init.StopBits = UART_STOPBITS_1;
+    huart2.Init.Parity = UART_PARITY_NONE;
+    huart2.Init.Mode = UART_MODE_TX_RX;
+    huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+    if (HAL_UART_Init(&huart2) != HAL_OK) {
+        Error_Handler();
+    }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
