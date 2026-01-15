@@ -54,8 +54,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     rx_buf[rx_len++] = rx_byte;
 
-    HAL_UART_Transmit(&huart1, &rx_byte, 1, 10);
-
     if (rx_len >= sizeof(rx_buf)) rx_len = 0;
 
     // 如果遇到换行符，认为一条返回结束
@@ -65,4 +63,3 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1); // 继续接收
 }
-
