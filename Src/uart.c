@@ -48,11 +48,13 @@ void MX_USART2_UART_Init(void) {
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance != USART1) {
+    if (huart->Instance != USART2) {
         return;
     }
 
     rx_buf[rx_len++] = rx_byte;
+
+    HAL_UART_Transmit(&huart1, &rx_byte, 1, 100);
 
     if (rx_len >= sizeof(rx_buf)) rx_len = 0;
 
@@ -61,6 +63,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         uart_rx_finished = 1;
     }
 
-    HAL_UART_Receive_IT(&huart1, &rx_byte, 1); // 继续接收
+    HAL_UART_Receive_IT(&huart2, &rx_byte, 1); // 继续接收
 }
 

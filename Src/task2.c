@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "stm32f1xx_hal.h"
+#include "uart.h"
 
 #define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 差值秒数
 
@@ -15,7 +16,6 @@
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif
 
-extern UART_HandleTypeDef huart1;
 extern uint8_t uart_rx_finished;
 extern uint8_t rx_byte;
 extern uint16_t rx_len;
@@ -40,7 +40,7 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     rx_len = 0;
     uart_rx_finished = 0;
 
-    HAL_UART_Transmit(&huart1, (uint8_t *) cmd, strlen(cmd), 100);
+    HAL_UART_Transmit(&huart2, (uint8_t *) cmd, strlen(cmd), 100);
 
     while (timeoutSec-- > 0) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
@@ -70,7 +70,7 @@ static AT_Status sendQuery() {
     unsigned char packet[48] = {0};
     packet[0] = 0x1B;
 
-    HAL_UART_Transmit(&huart1, (uint8_t *) packet, sizeof(packet), 100);
+    HAL_UART_Transmit(&huart2, (uint8_t *) packet, sizeof(packet), 100);
 
     while (timeoutSec-- > 0) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);

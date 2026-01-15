@@ -15,7 +15,7 @@ int main(void) {
     GPIO_Init();
     MX_USART1_UART_Init();
     MX_USART2_UART_Init();
-    HAL_UART_Receive_IT(&huart1, &rx_byte, 1);
+    HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
     OSInit(&err);
 
