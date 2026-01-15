@@ -1,6 +1,5 @@
 #include "main.h"
 #include <os.h>
-#include "bsp.h"
 #include "gpio.h"
 #include "uart.h"
 #include "clock.h"
