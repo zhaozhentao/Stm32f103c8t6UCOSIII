@@ -103,37 +103,31 @@ static void sendQuery() {
 }
 
 static void wifiInit() {
-    printf("\r\nSend AT\r\n");
     if (sendATCmd("AT\r\n", "OK", 2) != AT_OK) {
         printf("AT ERROR\r\n");
         return;
     }
 
-    printf("\r\nSend AT+CWMODE=1\r\n");
     if (sendATCmd("AT+CWMODE=1\r\n", "OK", 2) != AT_OK) {
         printf("CWMODE ERROR\r\n");
         return;
     }
 
-    printf("\r\nSend AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n");
     if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 10) != AT_OK) {
         printf("CWJAP ERROR\r\n");
         return;
     }
 
-    printf("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n");
     if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 5) != AT_OK) {
         printf("aliyun ERROR\r\n");
         return;
     }
 
-    printf("AT+CIPSEND=48\r\n");
     if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 5) != AT_OK) {
         printf("CIPSEND ERROR");
         return;
     }
 
-    printf("sendQuery\r\n");
     sendQuery();
 }
 
