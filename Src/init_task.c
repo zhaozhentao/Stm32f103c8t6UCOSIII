@@ -31,7 +31,7 @@ static void task() {
 
     CPU_IntDisMeasMaxCurReset();
 
-    createTask1();
+//    createTask1();
 
     createTask2();
 
