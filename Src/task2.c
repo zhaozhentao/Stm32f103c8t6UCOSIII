@@ -40,7 +40,7 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     rx_len = 0;
     uart_rx_finished = 0;
 
-    HAL_UART_Transmit(&huart2, (uint8_t *) cmd, strlen(cmd), 100);
+    HAL_UART_Transmit(&huart2, (uint8_t *) cmd, strlen(cmd), 50);
 
     while (timeoutSec-- > 0) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
@@ -80,7 +80,6 @@ static AT_Status sendQuery() {
             uart_rx_finished = 0;
             // 一共 88 字节
             // 会收到这样的响应 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
-
             secs_since_1900 =
                     ((unsigned long long) rx_buf[80] << 24) |
                     ((unsigned long long) rx_buf[81] << 16) |
@@ -101,32 +100,47 @@ static AT_Status sendQuery() {
 }
 
 static void wifiInit() {
-    if (sendATCmd("AT\r\n", "OK", 10) != AT_OK)
+    printf("\r\nSend AT\r\n");
+    if (sendATCmd("AT\r\n", "OK", 2) != AT_OK) {
+        printf("AT ERROR\r\n");
         return;
+    }
 
-    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 10) != AT_OK)
+    printf("\r\nSend AT+CWMODE=1\r\n");
+    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 2) != AT_OK) {
+        printf("CWMODE ERROR\r\n");
         return;
+    }
 
-    if (sendATCmd("AT+CWJAP=\"zhao1003\",\"zhaozhao\"\r\n", "OK", 10) != AT_OK)
+    printf("\r\nSend AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n");
+    if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 10) != AT_OK) {
+        printf("CWJAP ERROR\r\n");
         return;
+    }
 
-    if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "OK", 10) != AT_OK)
+    printf("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n");
+    if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECED", 5) != AT_OK) {
+        printf("aliyun ERROR\r\n");
         return;
+    }
 
-    if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 10) != AT_OK)
+    printf("AT+CIPSEND=48\r\n");
+    if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 5) != AT_OK) {
+        printf("CIPSEND ERROR");
         return;
+    }
 
+    printf("sendQuery\r\n");
     sendQuery();
-
 }
 
 static void task() {
     OS_ERR err;
 
     while (1) {
-        wifiInit();
-
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+
+        wifiInit();
     }
 }
 

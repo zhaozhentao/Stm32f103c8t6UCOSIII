@@ -54,7 +54,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
     rx_buf[rx_len++] = rx_byte;
 
-    HAL_UART_Transmit(&huart1, &rx_byte, 1, 100);
+    HAL_UART_Transmit(&huart1, &rx_byte, 1, 10);
 
     if (rx_len >= sizeof(rx_buf)) rx_len = 0;
 

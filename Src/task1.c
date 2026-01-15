@@ -14,11 +14,8 @@ static void task() {
     int brightness = 0;             // 当前亮度
     int direction = 1;              // 亮度变化方向: 1=增加, -1=减少
     int counter = 0;                // 计数器，控制亮度变化频率
-    char *s = "running";
 
     while (1) {
-        HAL_UART_Transmit(&huart2, s, strlen(s), 100);
-
         // 设置LED亮度（通过GPIO模拟PWM效果）
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED亮
         OSTimeDlyHMSM(0, 0, 0, brightness, OS_OPT_TIME_DLY, &err);
