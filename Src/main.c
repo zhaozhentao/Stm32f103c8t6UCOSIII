@@ -6,6 +6,7 @@
 #include "clock.h"
 
 void createInitTask();
+void MX_SPI1_Init();
 
 int main(void) {
     OS_ERR err;
@@ -15,6 +16,7 @@ int main(void) {
     GPIO_Init();
     MX_USART1_UART_Init();
     MX_USART2_UART_Init();
+    MX_SPI1_Init();
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
     OSInit(&err);
