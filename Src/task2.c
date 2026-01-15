@@ -47,23 +47,22 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     while (timeoutSec-- > 0) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-        if (uart_rx_finished) {
-            uart_rx_finished = 0;
-            rx_buf[rx_len] = '\0';
-
-            printf("recv %s __\r\n", rx_buf);
-
-            if (strstr((char *) rx_buf, expect) != NULL)
-                return AT_OK;
-            else if (strstr((char *) rx_buf, "ERROR") != NULL)
-                return AT_ERROR;
+        if (!uart_rx_finished) {
+            continue;
         }
+
+        printf("recv %s __\r\n", rx_buf);
+
+        if (strstr((char *) rx_buf, expect) != NULL)
+            return AT_OK;
+        else if (strstr((char *) rx_buf, "ERROR") != NULL)
+            return AT_ERROR;
     }
 
     return AT_TIMEOUT;
 }
 
-static AT_Status sendQuery() {
+static void sendQuery() {
     int timeoutSec = 10;
     OS_ERR err;
     unsigned long long secs_since_1900;
@@ -79,26 +78,28 @@ static AT_Status sendQuery() {
     while (timeoutSec-- > 0) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-        // 接收到换行，认为接收完成
-        if (uart_rx_finished) {
-            uart_rx_finished = 0;
-            // 一共 88 字节
-            // 会收到这样的响应 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
-            secs_since_1900 =
-                    ((unsigned long long) rx_buf[78] << 24) |
-                    ((unsigned long long) rx_buf[79] << 16) |
-                    ((unsigned long long) rx_buf[80] << 8) |
-                    ((unsigned long long) rx_buf[81]);
-
-            time_t unix_time = secs_since_1900 - NTP_TIMESTAMP_DELTA + (8 * 3600);
-
-            struct tm *tm_info = localtime(&unix_time);
-
-            printf("Local time: %s\n", asctime(tm_info));
+        if (!uart_rx_finished) {
+            continue;
         }
-    }
 
-    return AT_TIMEOUT;
+        // 接收到换行，认为接收完成
+        uart_rx_finished = 0;
+        // 一共 86 字节
+        // 会收到这样的响应 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
+        secs_since_1900 =
+                ((unsigned long long) rx_buf[78] << 24) |
+                ((unsigned long long) rx_buf[79] << 16) |
+                ((unsigned long long) rx_buf[80] << 8) |
+                ((unsigned long long) rx_buf[81]);
+
+        time_t unix_time = secs_since_1900 - NTP_TIMESTAMP_DELTA + (8 * 3600);
+
+        struct tm *tm_info = localtime(&unix_time);
+
+        printf("Local time: %s\r\n", asctime(tm_info));
+
+        return;
+    }
 }
 
 static void wifiInit() {
