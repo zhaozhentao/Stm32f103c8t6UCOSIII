@@ -51,8 +51,6 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
             continue;
         }
 
-        printf("recv %s __\r\n", rx_buf);
-
         if (strstr((char *) rx_buf, expect) != NULL)
             return AT_OK;
         else if (strstr((char *) rx_buf, "ERROR") != NULL)
