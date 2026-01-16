@@ -8,7 +8,7 @@ typedef uint32_t u32;
 
 #define OLED_TASK_STK_SIZE 512
 
-#define OLED_READ_FS0()   HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)
+#define OLED_READ_FS0()   HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6)
 
 #define OLED_SCL_Clr()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET)
 #define OLED_SCL_Set()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET)
@@ -16,11 +16,11 @@ typedef uint32_t u32;
 #define OLED_SDA_Clr()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET)
 #define OLED_SDA_Set()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET)
 
-#define OLED_DC_Set()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)
 #define OLED_DC_Clr()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET)
+#define OLED_DC_Set()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)
 
-#define OLED_CS_Set()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET)
 #define OLED_CS_Clr()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET)
+#define OLED_CS_Set()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET)
 
 #define OLED_ROM_CS_Clr()  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET)
 #define OLED_ROM_CS_Set()  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET)
