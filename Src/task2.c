@@ -4,6 +4,7 @@
 #include <time.h>
 #include "stm32f1xx_hal.h"
 #include "uart.h"
+#include "oled.h"
 
 #define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 ≤Ó÷µ√Î ˝
 
@@ -23,15 +24,6 @@ extern uint8_t rx_buf[256];
 
 OS_TCB UartTaskTCB;
 CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
-
-typedef uint8_t u8;
-typedef uint32_t u32;
-
-void OLED_Init();
-void OLED_ColorTurn(u8 i);
-void OLED_DisplayTurn(u8 i);
-void OLED_Clear();
-void OLED_Display_GB2312_string(u8 x, u8 y, u8 *text);
 
 PUTCHAR_PROTOTYPE {
     HAL_UART_Transmit(&huart1, (uint8_t * ) & ch, 1, 50);

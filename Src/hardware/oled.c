@@ -2,9 +2,7 @@
 #include <string.h>
 #include "stm32f1xx_hal.h"
 #include "uart.h"
-
-typedef uint8_t u8;
-typedef uint32_t u32;
+#include "oled.h"
 
 u32 fontaddr = 0;
 
