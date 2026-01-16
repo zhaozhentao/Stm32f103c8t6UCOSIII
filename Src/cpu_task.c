@@ -26,7 +26,7 @@ static void task(void *p_arg) {
     }
 }
 
-void createCPUTask(void) {
+void createTimerTask(void) {
     OS_ERR err;
 
     OSTaskCreate((OS_TCB * ) & AppTaskStatusTCB,

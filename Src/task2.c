@@ -142,7 +142,7 @@ static void task() {
     }
 }
 
-void createTask2() {
+void createNTPTask() {
     OSTaskCreate((OS_TCB * ) & UartTaskTCB,
                  (CPU_CHAR *) "Uart Task",
                  (OS_TASK_PTR) task,

@@ -44,7 +44,7 @@ static void task() {
     }
 }
 
-void createTask3() {
+void createDisplayTask() {
     OSTaskCreate((OS_TCB * ) & TaskTCB,
                  (CPU_CHAR *) "LED Task",
                  (OS_TASK_PTR) task,

@@ -5,11 +5,10 @@
 #define  APP_TASK_STATUS_PRIO                       5
 #define  APP_TASK_STATUS_STK_SIZE                   128
 
-void createTask1();
-void createTask2();
-void createTask3();
-
-void createCPUTask();
+void createLedTask();
+void createNTPTask();
+void createDisplayTask();
+void createTimerTask();
 
 static OS_TCB AppTaskStartTCB;
 
@@ -37,13 +36,13 @@ static void task() {
     OLED_DisplayTurn(0); //0正常显示 1 屏幕翻转显示
     OLED_Clear();
 
-    createTask1();
+    createLedTask();
 
-    createTask2();
+    createNTPTask();
 
-    createTask3();
+    createDisplayTask();
 
-    createCPUTask();
+    createTimerTask();
 
     OSTaskDel(&AppTaskStartTCB, &err);
 }
