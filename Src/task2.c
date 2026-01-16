@@ -104,7 +104,7 @@ static void sendQuery() {
 
         struct tm *tm_info = localtime(&unix_time);
 
-        sprintf(display_buf, "%s", asctime(tm_info));
+        strftime(display_buf, sizeof(display_buf), " %m/%d %H:%M:%S ", tm_info);
 
         OLED_Display_GB2312_string(0, 0, display_buf);
 
