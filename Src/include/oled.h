@@ -2,6 +2,8 @@
 
 #define __OLED_H__
 
+#include "stm32f1xx_hal.h"
+
 typedef uint8_t u8;
 typedef uint32_t u32;
 
