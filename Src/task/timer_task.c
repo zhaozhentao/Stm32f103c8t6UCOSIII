@@ -7,8 +7,8 @@
 
 extern OS_MUTEX gTimeMutex;
 
-static OS_TCB AppTaskStatusTCB;
-static CPU_STK AppTaskStatusStk[APP_TASK_STATUS_STK_SIZE];
+static OS_TCB taskTCB;
+static CPU_STK taskStk[APP_TASK_STATUS_STK_SIZE];
 
 uint32_t gSysUnixTime = 0;
 
@@ -29,12 +29,12 @@ static void task(void *p_arg) {
 void createTimerTask(void) {
     OS_ERR err;
 
-    OSTaskCreate((OS_TCB * ) & AppTaskStatusTCB,
+    OSTaskCreate((OS_TCB * ) & taskTCB,
                  (CPU_CHAR *) "CPU Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
                  (OS_PRIO) CPU_TASK_PRIO,
-                 (CPU_STK * ) & AppTaskStatusStk[0],
+                 (CPU_STK * ) & taskStk[0],
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE / 10,
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE,
                  (OS_MSG_QTY) 5u,
