@@ -1,7 +1,6 @@
 #include <os.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include "stm32f1xx_hal.h"
 #include "uart.h"
 #include "oled.h"
@@ -21,6 +20,8 @@ extern uint8_t uart_rx_finished;
 extern uint8_t rx_byte;
 extern uint16_t rx_len;
 extern uint8_t rx_buf[256];
+extern uint32_t gSysUnixTime;
+extern OS_MUTEX gTimeMutex;
 
 OS_TCB UartTaskTCB;
 CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
@@ -66,7 +67,6 @@ static void sendQuery() {
     OS_ERR err;
     unsigned long long secs_since_1900;
     unsigned char packet[48] = {0};
-    u8 display_buf[32] = {0};
 
     rx_len = 0;
     uart_rx_finished = 0;
@@ -92,13 +92,9 @@ static void sendQuery() {
                 ((unsigned long long) rx_buf[80] << 8) |
                 ((unsigned long long) rx_buf[81]);
 
-        time_t unix_time = secs_since_1900 - NTP_TIMESTAMP_DELTA + (8 * 3600);
-
-        struct tm *tm_info = localtime(&unix_time);
-
-        strftime(display_buf, sizeof(display_buf), "%m/%d %H:%M:%S", tm_info);
-
-        OLED_Display_GB2312_string(0, 0, display_buf);
+        OSMutexPend(&gTimeMutex, 0, OS_OPT_PEND_BLOCKING, NULL, &err);
+        gSysUnixTime = secs_since_1900 - NTP_TIMESTAMP_DELTA + (8 * 3600);
+        OSMutexPost(&gTimeMutex, OS_OPT_POST_NONE, &err);
 
         return;
     }
@@ -138,11 +134,6 @@ static void task() {
 
     // 在 OS 启动后才能开启中断，否则 CPU 统计有问题
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
-
-    OLED_Init();
-    OLED_ColorTurn(0);   //0正常显示，1 反色显示
-    OLED_DisplayTurn(0); //0正常显示 1 屏幕翻转显示
-    OLED_Clear();
 
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);

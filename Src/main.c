@@ -5,7 +5,10 @@
 #include "clock.h"
 
 void createInitTask();
+
 void MX_SPI1_Init();
+
+OS_MUTEX gTimeMutex;
 
 int main(void) {
     OS_ERR err;
@@ -22,6 +25,8 @@ int main(void) {
     if (err != OS_ERR_NONE) {
         while (1);
     }
+
+    OSMutexCreate(&gTimeMutex, "Time Mutex", &err);
 
     createInitTask();
 
