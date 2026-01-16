@@ -1,38 +1,28 @@
 #include <os.h>
 #include <stdio.h>
-#include "oled.h"
+#include "stm32f1xx_hal.h"
 
 #define  APP_TASK_STATUS_PRIO                       6
-#define  APP_TASK_STATUS_STK_SIZE                   256
+#define  APP_TASK_STATUS_STK_SIZE                   128
 
-extern OS_TCB LedTaskTCB;
-extern OS_TCB UartTaskTCB;
+extern OS_MUTEX gTimeMutex;
 
 static OS_TCB AppTaskStatusTCB;
 static CPU_STK AppTaskStatusStk[APP_TASK_STATUS_STK_SIZE];
 
-static void showCPU() {
-    u8 display_buf[32] = {0};
-
-    sprintf(display_buf, "CPU: %d.%d%%", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
-
-    OLED_Display_GB2312_string(0, 2, display_buf);
-}
+uint32_t gSysUnixTime = 0;
 
 static void task(void *p_arg) {
     OS_ERR err;
-    u8 display_buf[32] = {0};
-    
+
     (void) p_arg;
 
     while (1) {
-        sprintf(display_buf, "CPU: %d.%d%%", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
-
-        OLED_Display_GB2312_string(0, 2, display_buf);
-
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_PERIODIC, &err);
 
-        showCPU();
+        OSMutexPend(&gTimeMutex, 0, OS_OPT_PEND_BLOCKING, NULL, &err);
+        gSysUnixTime++;   // µÝÔö 1 Ãë
+        OSMutexPost(&gTimeMutex, OS_OPT_POST_NONE, &err);
     }
 }
 
@@ -40,7 +30,7 @@ void createCPUTask(void) {
     OS_ERR err;
 
     OSTaskCreate((OS_TCB * ) & AppTaskStatusTCB,
-                 (CPU_CHAR *) "App Task Status",
+                 (CPU_CHAR *) "CPU Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
                  (OS_PRIO) APP_TASK_STATUS_PRIO,

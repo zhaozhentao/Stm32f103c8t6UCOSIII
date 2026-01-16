@@ -1,11 +1,13 @@
 #include <os.h>
 #include "bsp.h"
+#include "oled.h"
 
 #define  APP_TASK_STATUS_PRIO                       5
 #define  APP_TASK_STATUS_STK_SIZE                   128
 
 void createTask1();
 void createTask2();
+void createTask3();
 
 void createCPUTask();
 
@@ -30,9 +32,16 @@ static void task() {
 
     CPU_IntDisMeasMaxCurReset();
 
+    OLED_Init();
+    OLED_ColorTurn(0);   //0正常显示，1 反色显示
+    OLED_DisplayTurn(0); //0正常显示 1 屏幕翻转显示
+    OLED_Clear();
+
     createTask1();
 
     createTask2();
+
+    createTask3();
 
     createCPUTask();
 
