@@ -39,7 +39,7 @@ C_SOURCES =  \
 Src/main.c \
 Src/task1.c \
 Src/task2.c \
-Src/task3.c \
+Src/oled.c \
 Src/cpu_task.c \
 Src/init_task.c \
 Src/gpio.c \

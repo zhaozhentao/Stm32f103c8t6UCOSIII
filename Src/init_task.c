@@ -6,7 +6,6 @@
 
 void createTask1();
 void createTask2();
-void createTask3();
 
 void createCPUTask();
 
@@ -34,8 +33,6 @@ static void task() {
     createTask1();
 
     createTask2();
-
-    createTask3();
 
     createCPUTask();
 

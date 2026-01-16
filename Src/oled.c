@@ -6,7 +6,7 @@
 typedef uint8_t u8;
 typedef uint32_t u32;
 
-#define OLED_TASK_STK_SIZE 512
+u32 fontaddr = 0;
 
 #define OLED_READ_FS0()   HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6)
 
@@ -27,9 +27,6 @@ typedef uint32_t u32;
 
 #define OLED_CMD  0    //写命令
 #define OLED_DATA 1    //写数据
-
-OS_TCB OLedTask;
-CPU_STK OLedTaskStk[OLED_TASK_STK_SIZE];
 
 extern SPI_HandleTypeDef hspi1;
 
@@ -65,7 +62,7 @@ void OLED_WR_Byte(u8 dat, u8 cmd) {
 }
 
 //清屏函数
-void OLED_Clear(void) {
+void OLED_Clear() {
     u8 i, n;
     for (i = 0; i < 8; i++) {
         OLED_WR_Byte(0xb0 + i, OLED_CMD);//设置页地址
@@ -85,7 +82,7 @@ void OLED_address(u8 x, u8 y) {
 }
 
 // 未检查
-void OLED_Init(void) {
+void OLED_Init() {
     OS_ERR err;
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
@@ -221,8 +218,6 @@ void OLED_get_data_from_ROM(u8 addrHigh, u8 addrMid, u8 addrLow, u8 *pbuff, u8 D
     OLED_ROM_CS_Set();
 }
 
-u32 fontaddr = 0;
-
 void OLED_Display_GB2312_string(u8 x, u8 y, u8 *text) {
     u8 i = 0;
     u8 addrHigh, addrMid, addrLow;
@@ -277,34 +272,4 @@ void OLED_Display_GB2312_string(u8 x, u8 y, u8 *text) {
         } else
             i++;
     }
-}
-
-static void task() {
-    OS_ERR err;
-
-    OLED_Init();
-    OLED_ColorTurn(0); //0正常显示，1 反色显示
-    OLED_DisplayTurn(0); //0正常显示 1 屏幕翻转显示
-    OLED_Clear();
-    OLED_Display_GB2312_string(0, 0, "周五好");    /*在第1页，第1列，显示一串16x16点阵汉字或8x16的ASCII字*/
-
-    while (1) {
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
-    }
-}
-
-void createTask3() {
-    OSTaskCreate((OS_TCB * ) & OLedTask,
-                 (CPU_CHAR *) "OLED Task",
-                 (OS_TASK_PTR) task,
-                 (void *) 0,
-                 (OS_PRIO) 9,
-                 (CPU_STK * ) & OLedTaskStk[0],
-                 (CPU_STK_SIZE)(OLED_TASK_STK_SIZE / 10u),
-                 (CPU_STK_SIZE) OLED_TASK_STK_SIZE,
-                 (OS_MSG_QTY) 0,
-                 (OS_TICK) 0,
-                 (void *) 0,
-                 (OS_OPT)(OS_OPT_TASK_STK_CLR),
-                 (OS_ERR *) 0);
 }

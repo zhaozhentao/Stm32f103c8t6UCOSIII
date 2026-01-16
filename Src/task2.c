@@ -5,12 +5,12 @@
 #include "stm32f1xx_hal.h"
 #include "uart.h"
 
-#define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 å·®å€¼ç§’æ•°
+#define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 ²îÖµÃëÊı
 
 #define LED_TASK_STK_SIZE 512
 
 #ifdef __GNUC__
-/* ä½¿ç”¨ GCC ç¼–è¯‘å™¨ */
+/* Ê¹ÓÃ GCC ±àÒëÆ÷ */
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 #else
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
@@ -23,6 +23,15 @@ extern uint8_t rx_buf[256];
 
 OS_TCB UartTaskTCB;
 CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
+
+typedef uint8_t u8;
+typedef uint32_t u32;
+
+void OLED_Init();
+void OLED_ColorTurn(u8 i);
+void OLED_DisplayTurn(u8 i);
+void OLED_Clear();
+void OLED_Display_GB2312_string(u8 x, u8 y, u8 *text);
 
 PUTCHAR_PROTOTYPE {
     HAL_UART_Transmit(&huart1, (uint8_t * ) & ch, 1, 50);
@@ -65,6 +74,7 @@ static void sendQuery() {
     OS_ERR err;
     unsigned long long secs_since_1900;
     unsigned char packet[48] = {0};
+    u8 display_buf[32] = {0};
 
     rx_len = 0;
     uart_rx_finished = 0;
@@ -80,10 +90,10 @@ static void sendQuery() {
             continue;
         }
 
-        // æ¥æ”¶åˆ°æ¢è¡Œï¼Œè®¤ä¸ºæ¥æ”¶å®Œæˆ
+        // ½ÓÊÕµ½»»ĞĞ£¬ÈÏÎª½ÓÊÕÍê³É
         uart_rx_finished = 0;
-        // ä¸€å…± 86 å­—èŠ‚
-        // ä¼šæ”¶åˆ°è¿™æ ·çš„å“åº” 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
+        // Ò»¹² 86 ×Ö½Ú
+        // »áÊÕµ½ÕâÑùµÄÏìÓ¦ 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
         secs_since_1900 =
                 ((unsigned long long) rx_buf[78] << 24) |
                 ((unsigned long long) rx_buf[79] << 16) |
@@ -94,7 +104,9 @@ static void sendQuery() {
 
         struct tm *tm_info = localtime(&unix_time);
 
-        printf("Local time: %s\r\n", asctime(tm_info));
+        sprintf(display_buf, "%s", asctime(tm_info));
+
+        OLED_Display_GB2312_string(0, 0, display_buf);
 
         return;
     }
@@ -131,6 +143,11 @@ static void wifiInit() {
 
 static void task() {
     OS_ERR err;
+
+    OLED_Init();
+    OLED_ColorTurn(0);   //0Õı³£ÏÔÊ¾£¬1 ·´É«ÏÔÊ¾
+    OLED_DisplayTurn(0); //0Õı³£ÏÔÊ¾ 1 ÆÁÄ»·­×ªÏÔÊ¾
+    OLED_Clear();
 
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
