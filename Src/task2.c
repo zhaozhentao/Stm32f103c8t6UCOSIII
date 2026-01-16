@@ -140,12 +140,11 @@ static void task() {
     OLED_ColorTurn(0);   //0正常显示，1 反色显示
     OLED_DisplayTurn(0); //0正常显示 1 屏幕翻转显示
     OLED_Clear();
-    OLED_Display_GB2312_string(0, 0, "CPU");
 
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-//        wifiInit();
+        wifiInit();
     }
 }
 

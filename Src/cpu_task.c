@@ -1,5 +1,6 @@
 #include <os.h>
 #include <stdio.h>
+#include "oled.h"
 
 #define  APP_TASK_STATUS_PRIO                       6
 #define  APP_TASK_STATUS_STK_SIZE                   256
@@ -12,9 +13,15 @@ static CPU_STK AppTaskStatusStk[APP_TASK_STATUS_STK_SIZE];
 
 static void task(void *p_arg) {
     OS_ERR err;
+    u8 display_buf[32] = {0};
+    
     (void) p_arg;
 
     while (1) {
+        sprintf(display_buf, "CPU: %d.%d%%", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
+
+        OLED_Display_GB2312_string(0, 2, display_buf);
+
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_PERIODIC, &err);
     }
 }
