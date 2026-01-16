@@ -3,6 +3,15 @@
 
 SPI_HandleTypeDef hspi1;
 
+//              GND  电源地
+//              VCC  3.3v电源
+//              D0   PA5（SCL）
+//              D1   PA7（SDA）
+//              DC   PD2  替换为 PA4
+//              CS1  PB5  替换为 PA1
+//              FS0  PA4  PA6
+//              CS2  PB6  替换为 PA8
+
 void MX_SPI1_Init() {
     /* SPI1 parameter configuration*/
     hspi1.Instance = SPI1;
