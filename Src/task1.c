@@ -2,11 +2,12 @@
 #include <string.h>
 #include "stm32f1xx_hal.h"
 #include "uart.h"
+#include "prio.h"
 
 #define LED_TASK_STK_SIZE 128
 
-OS_TCB LedTaskTCB;
-CPU_STK LedTaskStk[LED_TASK_STK_SIZE];
+static OS_TCB TaskTCB;
+static CPU_STK TaskStk[LED_TASK_STK_SIZE];
 
 static void task() {
     const int MAX_BRIGHTNESS = 10;  // 最大亮度等级
@@ -42,12 +43,12 @@ static void task() {
 }
 
 void createLedTask(void) {
-    OSTaskCreate((OS_TCB * ) & LedTaskTCB,
+    OSTaskCreate((OS_TCB * ) & TaskTCB,
                  (CPU_CHAR *) "LED Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
-                 (OS_PRIO) 7,
-                 (CPU_STK * ) & LedTaskStk[0],
+                 (OS_PRIO) LED_TASK_STK_SIZE,
+                 (CPU_STK * ) & TaskStk[0],
                  (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
                  (CPU_STK_SIZE) LED_TASK_STK_SIZE,
                  (OS_MSG_QTY) 0,

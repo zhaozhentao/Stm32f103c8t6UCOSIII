@@ -1,8 +1,8 @@
 #include <os.h>
 #include <stdio.h>
 #include "stm32f1xx_hal.h"
+#include "prio.h"
 
-#define  APP_TASK_STATUS_PRIO                       6
 #define  APP_TASK_STATUS_STK_SIZE                   128
 
 extern OS_MUTEX gTimeMutex;
@@ -33,7 +33,7 @@ void createTimerTask(void) {
                  (CPU_CHAR *) "CPU Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
-                 (OS_PRIO) APP_TASK_STATUS_PRIO,
+                 (OS_PRIO) CPU_TASK_PRIO,
                  (CPU_STK * ) & AppTaskStatusStk[0],
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE / 10,
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE,

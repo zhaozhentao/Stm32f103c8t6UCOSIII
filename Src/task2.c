@@ -4,6 +4,7 @@
 #include "stm32f1xx_hal.h"
 #include "uart.h"
 #include "oled.h"
+#include "prio.h"
 
 #define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 ≤Ó÷µ√Î ˝
 
@@ -147,7 +148,7 @@ void createNTPTask() {
                  (CPU_CHAR *) "Uart Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
-                 (OS_PRIO) 8,
+                 (OS_PRIO) NTP_TASK_PRIO,
                  (CPU_STK * ) & UartTaskStk[0],
                  (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
                  (CPU_STK_SIZE) LED_TASK_STK_SIZE,

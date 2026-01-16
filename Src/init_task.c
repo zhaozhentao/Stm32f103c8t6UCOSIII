@@ -1,18 +1,20 @@
 #include <os.h>
 #include "bsp.h"
 #include "oled.h"
+#include "prio.h"
 
-#define  APP_TASK_STATUS_PRIO                       5
 #define  APP_TASK_STATUS_STK_SIZE                   128
 
 void createLedTask();
+
 void createNTPTask();
+
 void createDisplayTask();
+
 void createTimerTask();
 
-static OS_TCB AppTaskStartTCB;
-
-static CPU_STK AppTaskStatusStk[APP_TASK_STATUS_STK_SIZE];
+static OS_TCB TaskTCB;
+static CPU_STK TaskStk[APP_TASK_STATUS_STK_SIZE];
 
 static void task() {
     OS_ERR err;
@@ -44,18 +46,18 @@ static void task() {
 
     createTimerTask();
 
-    OSTaskDel(&AppTaskStartTCB, &err);
+    OSTaskDel(&TaskTCB, &err);
 }
 
 void createInitTask() {
     OS_ERR err;
 
-    OSTaskCreate((OS_TCB * ) & AppTaskStartTCB,
-                 (CPU_CHAR *) "App Init Task",
+    OSTaskCreate((OS_TCB * ) & TaskTCB,
+                 (CPU_CHAR *) "Init Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
-                 (OS_PRIO) APP_TASK_STATUS_PRIO,
-                 (CPU_STK * ) & AppTaskStatusStk[0],
+                 (OS_PRIO) INIT_TASK_PRIO,
+                 (CPU_STK * ) & TaskStk[0],
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE / 10,
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE,
                  (OS_MSG_QTY) 5u,
