@@ -46,17 +46,19 @@ static void task() {
 }
 
 void createDisplayTask() {
-    OSTaskCreate((OS_TCB * ) & TaskTCB,
-                 (CPU_CHAR *) "LED Task",
-                 (OS_TASK_PTR) task,
-                 (void *) 0,
-                 (OS_PRIO) DISPLAY_TASK_PRIO,
-                 (CPU_STK * ) & TaskStk[0],
-                 (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
-                 (CPU_STK_SIZE) LED_TASK_STK_SIZE,
-                 (OS_MSG_QTY) 0,
-                 (OS_TICK) 0,
-                 (void *) 0,
-                 (OS_OPT)(OS_OPT_TASK_STK_CLR),
-                 (OS_ERR *) 0);
+    OSTaskCreate(
+            (OS_TCB * ) & TaskTCB,
+            (CPU_CHAR *) "LED Task",
+            (OS_TASK_PTR) task,
+            (void *) 0,
+            (OS_PRIO) DISPLAY_TASK_PRIO,
+            (CPU_STK * ) & TaskStk[0],
+            (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
+            (CPU_STK_SIZE) LED_TASK_STK_SIZE,
+            (OS_MSG_QTY) 0,
+            (OS_TICK) 0,
+            (void *) 0,
+            (OS_OPT)(OS_OPT_TASK_STK_CLR),
+            (OS_ERR *) 0
+    );
 }

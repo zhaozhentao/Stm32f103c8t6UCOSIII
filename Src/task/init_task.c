@@ -52,17 +52,19 @@ static void task() {
 void createInitTask() {
     OS_ERR err;
 
-    OSTaskCreate((OS_TCB * ) & TaskTCB,
-                 (CPU_CHAR *) "Init Task",
-                 (OS_TASK_PTR) task,
-                 (void *) 0,
-                 (OS_PRIO) INIT_TASK_PRIO,
-                 (CPU_STK * ) & TaskStk[0],
-                 (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE / 10,
-                 (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE,
-                 (OS_MSG_QTY) 5u,
-                 (OS_TICK) 0u,
-                 (void *) 0,
-                 (OS_OPT)(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
-                 (OS_ERR * ) & err);
+    OSTaskCreate(
+            (OS_TCB * ) & TaskTCB,
+            (CPU_CHAR *) "Init Task",
+            (OS_TASK_PTR) task,
+            (void *) 0,
+            (OS_PRIO) INIT_TASK_PRIO,
+            (CPU_STK * ) & TaskStk[0],
+            (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE / 10,
+            (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE,
+            (OS_MSG_QTY) 5u,
+            (OS_TICK) 0u,
+            (void *) 0,
+            (OS_OPT)(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+            (OS_ERR * ) & err
+    );
 }
