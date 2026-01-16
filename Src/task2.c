@@ -104,7 +104,7 @@ static void sendQuery() {
 
         struct tm *tm_info = localtime(&unix_time);
 
-        strftime(display_buf, sizeof(display_buf), " %m/%d %H:%M:%S ", tm_info);
+        strftime(display_buf, sizeof(display_buf), "%m/%d %H:%M:%S", tm_info);
 
         OLED_Display_GB2312_string(0, 0, display_buf);
 
@@ -143,6 +143,9 @@ static void wifiInit() {
 
 static void task() {
     OS_ERR err;
+
+    // 在 OS 启动后才能开启中断，否则 CPU 统计有问题
+    HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
     OLED_Init();
     OLED_ColorTurn(0);   //0正常显示，1 反色显示
