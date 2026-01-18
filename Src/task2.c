@@ -7,6 +7,8 @@
 
 #define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 差值秒数
 
+#define UART_BUFFER_LENGTH 256
+
 #define LED_TASK_STK_SIZE 512
 
 #ifdef __GNUC__
@@ -19,7 +21,7 @@
 extern uint8_t uart_rx_finished;
 extern uint8_t rx_byte;
 extern uint16_t rx_len;
-extern uint8_t rx_buf[256];
+extern uint8_t rx_buf[UART_BUFFER_LENGTH];
 extern uint32_t gSysUnixTime;
 extern OS_MUTEX gTimeMutex;
 
@@ -47,7 +49,7 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     HAL_UART_Transmit(&huart2, (uint8_t *) cmd, strlen(cmd), 50);
 
     while (timeoutSec-- > 0) {
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+        OSTimeDlyHMSM(0, 0, 0, 500, OS_OPT_TIME_DLY, &err);
 
         if (!uart_rx_finished) {
             continue;
@@ -60,6 +62,18 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     }
 
     return AT_TIMEOUT;
+}
+
+int findLastNonZeroIndex() {
+    // 从最后一个索引（255）开始向前遍历
+    for (int i = UART_BUFFER_LENGTH - 1; i >= 0; i--) {
+        // 找到第一个非0元素，返回索引
+        if (rx_buf[i] != 0) {
+            return i;
+        }
+    }
+    // 数组全为0
+    return -1;
 }
 
 static void sendQuery() {
@@ -82,6 +96,10 @@ static void sendQuery() {
             continue;
         }
 
+        if (findLastNonZeroIndex() != 85) {
+            continue;
+        }
+
         // 接收到换行，认为接收完成
         uart_rx_finished = 0;
         // 一共 86 字节
@@ -101,12 +119,12 @@ static void sendQuery() {
 }
 
 static void wifiInit() {
-    if (sendATCmd("AT\r\n", "OK", 2) != AT_OK) {
+    if (sendATCmd("AT\r\n", "OK", 4) != AT_OK) {
         printf("AT ERROR\r\n");
         return;
     }
 
-    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 2) != AT_OK) {
+    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
         printf("CWMODE ERROR\r\n");
         return;
     }
@@ -116,12 +134,12 @@ static void wifiInit() {
         return;
     }
 
-    if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 5) != AT_OK) {
+    if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 6) != AT_OK) {
         printf("aliyun ERROR\r\n");
         return;
     }
 
-    if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 5) != AT_OK) {
+    if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 6) != AT_OK) {
         printf("CIPSEND ERROR");
         return;
     }
