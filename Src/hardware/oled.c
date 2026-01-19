@@ -82,10 +82,7 @@ void OLED_address(u8 x, u8 y) {
 void OLED_Init() {
     OS_ERR err;
 
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
-
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_8, GPIO_PIN_SET);
 
     OSTimeDlyHMSM(0, 0, 0, 200, OS_OPT_TIME_DLY, &err);
 
