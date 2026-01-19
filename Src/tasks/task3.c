@@ -6,13 +6,13 @@
 
 #define LED_TASK_STK_SIZE 256
 
-extern OS_Q TempMsgQ;
-
 static OS_TCB TaskTCB;
 static CPU_STK TaskStk[LED_TASK_STK_SIZE];
 
+extern OS_Q TempMsgQ;
 extern uint32_t gSysUnixTime;
 
+// 刷新时间
 static void showTime() {
     u8 buffer[32] = {0};
 
@@ -25,6 +25,7 @@ static void showTime() {
     OLED_Display_GB2312_string(0, 0, buffer);
 }
 
+// 显示 CPU 使用率
 static void showCPU() {
     u8 display_buf[32] = {0};
 
@@ -35,6 +36,7 @@ static void showCPU() {
 
 void showDisplayMessage(int p);
 
+// 获取 wifi 模块状态变更消息
 void pickMessage() {
     OS_MSG_SIZE msg_size;
     int *p;
