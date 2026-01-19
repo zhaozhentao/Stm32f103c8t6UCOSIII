@@ -6,14 +6,6 @@
 
 u32 fontaddr = 0;
 
-#define OLED_READ_FS0()   HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6)
-
-#define OLED_SCL_Clr()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET)
-#define OLED_SCL_Set()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET)
-
-#define OLED_SDA_Clr()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET)
-#define OLED_SDA_Set()    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET)
-
 #define OLED_DC_Clr()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET)
 #define OLED_DC_Set()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)
 
