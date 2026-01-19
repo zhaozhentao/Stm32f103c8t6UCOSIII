@@ -43,9 +43,9 @@ typedef enum {
 
 static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     OS_ERR err;
+
     rx_len = 0;
     uart_rx_finished = 0;
-
     memset(rx_buf, 0, 256);
 
     HAL_UART_Transmit(&huart2, (uint8_t *) cmd, strlen(cmd), 50);
@@ -85,16 +85,17 @@ static void sendDisplayMessage(int p) {
 }
 
 static void sendQuery() {
-    int timeoutSec = 10;
     OS_ERR err;
+    int timeoutSec = 10;
     unsigned long long secs_since_1900;
     unsigned char packet[48] = {0};
 
     rx_len = 0;
     uart_rx_finished = 0;
+    memset(rx_buf, 0, 256);
+
     packet[0] = 0x1B;
 
-    memset(rx_buf, 0, 256);
     HAL_UART_Transmit(&huart2, (uint8_t *) packet, sizeof(packet), 100);
 
     while (timeoutSec-- > 0) {
@@ -135,31 +136,26 @@ static void ntpSync() {
 
     sendDisplayMessage(1);
     if (sendATCmd("AT\r\n", "OK", 4) != AT_OK) {
-        printf("AT ERROR\r\n");
         return;
     }
 
     sendDisplayMessage(2);
     if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
-        printf("CWMODE ERROR\r\n");
         return;
     }
 
     sendDisplayMessage(3);
     if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 10) != AT_OK) {
-        printf("CWJAP ERROR\r\n");
         return;
     }
 
     sendDisplayMessage(4);
-    if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 6) != AT_OK) {
-        printf("aliyun ERROR\r\n");
+    if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 10) != AT_OK) {
         return;
     }
 
     sendDisplayMessage(5);
     if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 6) != AT_OK) {
-        printf("CIPSEND ERROR");
         return;
     }
 
