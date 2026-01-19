@@ -37,11 +37,11 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 Src/main.c \
-Src/task1.c \
-Src/task2.c \
-Src/task3.c \
-Src/cpu_task.c \
-Src/init_task.c \
+Src/tasks/task1.c \
+Src/tasks/task2.c \
+Src/tasks/task3.c \
+Src/tasks/cpu_task.c \
+Src/tasks/init_task.c \
 Src/hardware/oled.c \
 Src/hardware/gpio.c \
 Src/hardware/uart.c \
