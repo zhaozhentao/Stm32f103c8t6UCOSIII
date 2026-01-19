@@ -96,11 +96,11 @@ static void sendQuery() {
             continue;
         }
 
+        // 认为接收完成
         if (findLastNonZeroIndex() != 85) {
             continue;
         }
 
-        // 接收到换行，认为接收完成
         uart_rx_finished = 0;
         // 一共 86 字节
         // 会收到这样的响应 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
@@ -118,32 +118,51 @@ static void sendQuery() {
     }
 }
 
+static void showAT(u8 * str) {
+    u8 display_buf[32] = {0};
+
+    sprintf(display_buf, "AT: %s", str);
+
+    OLED_Display_GB2312_string(0, 2, display_buf);
+}
+
 static void wifiInit() {
+    if (gSysUnixTime != 0) {
+        // 已经同步时间
+        return;
+    }
+
+    showAT("AT");
     if (sendATCmd("AT\r\n", "OK", 4) != AT_OK) {
         printf("AT ERROR\r\n");
         return;
     }
 
+    showAT("CWMODE");
     if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
         printf("CWMODE ERROR\r\n");
         return;
     }
 
+    showAT("CWJAP");
     if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 10) != AT_OK) {
         printf("CWJAP ERROR\r\n");
         return;
     }
 
+    showAT("CIPSTART");
     if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 6) != AT_OK) {
         printf("aliyun ERROR\r\n");
         return;
     }
 
+    showAT("CIPSEND");
     if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 6) != AT_OK) {
         printf("CIPSEND ERROR");
         return;
     }
 
+    showAT("Query");
     sendQuery();
 }
 

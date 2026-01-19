@@ -20,6 +20,11 @@ static void task(void *p_arg) {
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_PERIODIC, &err);
 
+        // 未初始化
+        if (gSysUnixTime == 0) {
+            continue;
+        }
+
         OSMutexPend(&gTimeMutex, 0, OS_OPT_PEND_BLOCKING, NULL, &err);
         gSysUnixTime++;   // 递增 1 秒
         OSMutexPost(&gTimeMutex, OS_OPT_POST_NONE, &err);
