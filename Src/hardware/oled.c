@@ -30,32 +30,31 @@ extern SPI_HandleTypeDef hspi1;
 
 // GND
 // VCC
-// clk  PA5
-// MOSI PA7
-// DC   PA4
-// CS1  PA1
-// FSO  PA6 输入
-// CS2  PA8
+// clk       PA5
+// MOSI      PA7
+// DC        PA4
+// CS1       PA1
+// FSO/MISO  PA6 输入
+// CS2       PA8
 
 //向SSD1306写入一个字节。
 //mode:数据/命令标志 0,表示命令;1,表示数据;
-void OLED_WR_Byte(u8 dat, u8 cmd) {
-    u8 i;
+void OLED_WR_Byte(uint8_t dat, uint8_t cmd) {
+    // 1. 控制 DC
     if (cmd)
-        OLED_DC_Set();
+        OLED_DC_Set();   // 写数据
     else
-        OLED_DC_Clr();
+        OLED_DC_Clr();   // 写命令
+
+    // 2. 拉低 CS ? 开始 SPI 会话
     OLED_CS_Clr();
-    for (i = 0; i < 8; i++) {
-        OLED_SCL_Clr();
-        if (dat & 0x80)
-            OLED_SDA_Set();
-        else
-            OLED_SDA_Clr();
-        OLED_SCL_Set();
-        dat <<= 1;
-    }
+
+    // 3. 使用硬件 SPI 写 1 字节
+    HAL_SPI_Transmit(&hspi1, &dat, 1, 10);
+
     OLED_CS_Set();
+
+    // 4. 拉高 CS ? 结束 SPI 会话
     OLED_DC_Set();
 }
 
@@ -161,17 +160,7 @@ void OLED_Display_8x16(u8 x, u8 y, u8 *dp) {
 
 //送指令到晶联讯字库IC
 void Send_Command_to_ROM(u8 dat) {
-    u8 i;
-    for (i = 0; i < 8; i++) {
-        OLED_SCL_Clr();
-        if (dat & 0x80) {
-            OLED_SDA_Set();
-        } else {
-            OLED_SDA_Clr();
-        }
-        dat <<= 1;
-        OLED_SCL_Set();
-    }
+    HAL_SPI_Transmit(&hspi1, &dat, 1, 10);
 }
 
 //显示16x16点阵图像、汉字、生僻字或16x16点阵的其他图标
@@ -188,17 +177,11 @@ void OLED_Display_16x16(u8 x, u8 y, u8 *dp) {
 }
 
 //从晶联讯字库IC中取汉字或字符数据（1个字节）
-u8 Get_data_from_ROM(void) {
-    u8 i, read = 0;
-    for (i = 0; i < 8; i++) {
-        OLED_SCL_Clr();
-        read <<= 1;
-        if (OLED_READ_FS0()) {
-            read++;
-        }
-        OLED_SCL_Set();
-    }
-    return read;
+uint8_t Get_data_from_ROM(void) {
+    uint8_t rx = 0;
+    uint8_t dummy = 0xFF;  // 主机必须发送才能生成时钟
+    HAL_SPI_TransmitReceive(&hspi1, &dummy, &rx, 1, 10);
+    return rx;
 }
 
 //从相关地址（addrHigh：地址高字节,addrMid：地址中字节,addrLow：地址低字节）中连续读出DataLen个字节的数据到 pbuff的地址
