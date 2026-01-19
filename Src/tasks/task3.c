@@ -2,10 +2,11 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
-#include <string.h>
 #include "oled.h"
 
 #define LED_TASK_STK_SIZE 256
+
+extern OS_Q TempMsgQ;
 
 static OS_TCB TaskTCB;
 static CPU_STK TaskStk[LED_TASK_STK_SIZE];
@@ -32,8 +33,12 @@ static void showCPU() {
     OLED_Display_GB2312_string(0, 6, display_buf);
 }
 
+void showDisplayMessage(int p);
+
 static void task() {
+    OS_MSG_SIZE msg_size;
     OS_ERR err;
+    int *p;
 
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
@@ -41,6 +46,19 @@ static void task() {
         showTime();
 
         showCPU();
+
+        p = (int *) OSQPend(
+                &TempMsgQ,
+                0,
+                0,
+                &msg_size,
+                NULL,
+                &err
+        );
+
+        if (*p) {
+            showDisplayMessage(*p);
+        }
     }
 }
 

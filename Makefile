@@ -47,6 +47,7 @@ Src/hardware/gpio.c \
 Src/hardware/uart.c \
 Src/hardware/spi.c \
 Src/hardware/clock.c \
+Src/hardware/display.c \
 Src/error_handle.c \
 Core/Src/stm32f1xx_it.c \
 Core/Src/stm32f1xx_hal_msp.c \

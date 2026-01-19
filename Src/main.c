@@ -12,6 +12,8 @@ OS_MUTEX gTimeMutex;
 
 OS_MUTEX spiMutex;
 
+OS_Q TempMsgQ;
+
 int main(void) {
     OS_ERR err;
 
@@ -31,6 +33,8 @@ int main(void) {
     OSMutexCreate(&gTimeMutex, "Time Mutex", &err);
 
     OSMutexCreate(&spiMutex, "SPI Mutex", &err);
+
+    OSQCreate(&TempMsgQ, "Msg Queue", 5, &err);
 
     createInitTask();
 

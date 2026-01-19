@@ -24,7 +24,9 @@ extern uint16_t rx_len;
 extern uint8_t rx_buf[UART_BUFFER_LENGTH];
 extern uint32_t gSysUnixTime;
 extern OS_MUTEX gTimeMutex;
+extern OS_Q TempMsgQ;
 
+int process = 0;
 OS_TCB UartTaskTCB;
 CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
 
@@ -76,6 +78,12 @@ int findLastNonZeroIndex() {
     return -1;
 }
 
+static void sendDisplayMessage(int p) {
+    process = p;
+
+    OSQPost(&TempMsgQ, &process, sizeof(process), OS_OPT_POST_FIFO, 0);
+}
+
 static void sendQuery() {
     int timeoutSec = 10;
     OS_ERR err;
@@ -90,7 +98,7 @@ static void sendQuery() {
     HAL_UART_Transmit(&huart2, (uint8_t *) packet, sizeof(packet), 100);
 
     while (timeoutSec-- > 0) {
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+        OSTimeDlyHMSM(0, 0, 0, 500, OS_OPT_TIME_DLY, &err);
 
         if (!uart_rx_finished) {
             continue;
@@ -114,55 +122,47 @@ static void sendQuery() {
         gSysUnixTime = secs_since_1900 - NTP_TIMESTAMP_DELTA + (8 * 3600);
         OSMutexPost(&gTimeMutex, OS_OPT_POST_NONE, &err);
 
+        sendDisplayMessage(6);
         return;
     }
 }
 
-static void showAT(u8 * str) {
-    u8 display_buf[32] = {0};
-
-    sprintf(display_buf, "AT: %s", str);
-
-    OLED_Display_GB2312_string(0, 2, display_buf);
-}
-
-static void wifiInit() {
+static void ntpSync() {
     if (gSysUnixTime != 0) {
         // 已经同步时间
         return;
     }
 
-    showAT("AT");
+    sendDisplayMessage(1);
     if (sendATCmd("AT\r\n", "OK", 4) != AT_OK) {
         printf("AT ERROR\r\n");
         return;
     }
 
-    showAT("CWMODE");
+    sendDisplayMessage(2);
     if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
         printf("CWMODE ERROR\r\n");
         return;
     }
 
-    showAT("CWJAP");
+    sendDisplayMessage(3);
     if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 10) != AT_OK) {
         printf("CWJAP ERROR\r\n");
         return;
     }
 
-    showAT("CIPSTART");
+    sendDisplayMessage(4);
     if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 6) != AT_OK) {
         printf("aliyun ERROR\r\n");
         return;
     }
 
-    showAT("CIPSEND");
+    sendDisplayMessage(5);
     if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 6) != AT_OK) {
         printf("CIPSEND ERROR");
         return;
     }
 
-    showAT("Query");
     sendQuery();
 }
 
@@ -175,7 +175,7 @@ static void task() {
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-        wifiInit();
+        ntpSync();
     }
 }
 
