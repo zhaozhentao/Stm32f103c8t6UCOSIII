@@ -10,6 +10,8 @@ void MX_SPI1_Init();
 
 OS_MUTEX gTimeMutex;
 
+OS_MUTEX spiMutex;
+
 int main(void) {
     OS_ERR err;
 
@@ -27,6 +29,8 @@ int main(void) {
     }
 
     OSMutexCreate(&gTimeMutex, "Time Mutex", &err);
+
+    OSMutexCreate(&spiMutex, "SPI Mutex", &err);
 
     createInitTask();
 

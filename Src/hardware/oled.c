@@ -19,6 +19,7 @@ u32 fontaddr = 0;
 #define OLED_DATA 1    //写数据
 
 extern SPI_HandleTypeDef hspi1;
+extern OS_MUTEX spiMutex;
 
 // GND
 // VCC
@@ -31,7 +32,12 @@ extern SPI_HandleTypeDef hspi1;
 
 //向SSD1306写入一个字节。
 //mode:数据/命令标志 0,表示命令;1,表示数据;
-void OLED_WR_Byte(uint8_t dat, uint8_t cmd) {
+void OLED_WR_Byte(u8 dat, u8 cmd) {
+    OS_ERR err;
+    OS_TICK ts;
+
+    OSMutexPend(&spiMutex, 0, OS_OPT_PEND_BLOCKING, &ts, &err);
+
     // 1. 控制 DC
     if (cmd)
         OLED_DC_Set();   // 写数据
@@ -48,6 +54,8 @@ void OLED_WR_Byte(uint8_t dat, uint8_t cmd) {
 
     // 4. 拉高 CS ? 结束 SPI 会话
     OLED_DC_Set();
+
+    OSMutexPost(&spiMutex, OS_OPT_POST_NONE, &err);
 }
 
 //清屏函数

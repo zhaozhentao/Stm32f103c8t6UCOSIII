@@ -29,7 +29,7 @@ static void showCPU() {
 
     sprintf(display_buf, "CPU: %d.%d%%", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
 
-    OLED_Display_GB2312_string(0, 2, display_buf);
+    OLED_Display_GB2312_string(0, 6, display_buf);
 }
 
 static void task() {
