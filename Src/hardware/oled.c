@@ -4,7 +4,7 @@
 #include "uart.h"
 #include "oled.h"
 
-u32 fontaddr = 0;
+u32 fontAddr = 0;
 
 #define OLED_DC_Clr()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET)
 #define OLED_DC_Set()     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)
@@ -205,13 +205,13 @@ void OLED_Display_GB2312_string(u8 x, u8 y, u8 *text) {
             //国标简体（GB2312）汉字在晶联讯字库IC中的地址由以下公式来计算：
             //Address = ((MSB - 0xB0) * 94 + (LSB - 0xA1)+ 846)*32+ BaseAdd;BaseAdd=0
             //由于担心8位单片机有乘法溢出问题，所以分三部取地址
-            fontaddr = (text[i] - 0xb0) * 94;
-            fontaddr += (text[i + 1] - 0xa1) + 846;
-            fontaddr = fontaddr * 32;
+            fontAddr = (text[i] - 0xb0) * 94;
+            fontAddr += (text[i + 1] - 0xa1) + 846;
+            fontAddr = fontAddr * 32;
 
-            addrHigh = (fontaddr & 0xff0000) >> 16;   //地址的高8位,共24位
-            addrMid = (fontaddr & 0xff00) >> 8;       //地址的中8位,共24位
-            addrLow = (fontaddr & 0xff);            //地址的低8位,共24位
+            addrHigh = (fontAddr & 0xff0000) >> 16;   //地址的高8位,共24位
+            addrMid = (fontAddr & 0xff00) >> 8;       //地址的中8位,共24位
+            addrLow = (fontAddr & 0xff);            //地址的低8位,共24位
 
             OLED_get_data_from_ROM(addrHigh, addrMid, addrLow, fontbuf, 32);
             //取32个字节的数据，存到"fontbuf[32]"
@@ -221,13 +221,13 @@ void OLED_Display_GB2312_string(u8 x, u8 y, u8 *text) {
             i += 2;
         } else if ((text[i] >= 0xa1) && (text[i] <= 0xa3) && (text[i + 1] >= 0xa1)) {
 
-            fontaddr = (text[i] - 0xa1) * 94;
-            fontaddr += (text[i + 1] - 0xa1);
-            fontaddr = fontaddr * 32;
+            fontAddr = (text[i] - 0xa1) * 94;
+            fontAddr += (text[i + 1] - 0xa1);
+            fontAddr = fontAddr * 32;
 
-            addrHigh = (fontaddr & 0xff0000) >> 16;
-            addrMid = (fontaddr & 0xff00) >> 8;
-            addrLow = (fontaddr & 0xff);
+            addrHigh = (fontAddr & 0xff0000) >> 16;
+            addrMid = (fontAddr & 0xff00) >> 8;
+            addrLow = (fontAddr & 0xff);
 
             OLED_get_data_from_ROM(addrHigh, addrMid, addrLow, fontbuf, 32);
             OLED_Display_16x16(x, y, fontbuf);
@@ -235,13 +235,13 @@ void OLED_Display_GB2312_string(u8 x, u8 y, u8 *text) {
             i += 2;
         } else if ((text[i] >= 0x20) && (text[i] <= 0x7e)) {
             unsigned char fontbuf[16];
-            fontaddr = (text[i] - 0x20);
-            fontaddr = (unsigned long) (fontaddr * 16);
-            fontaddr = (unsigned long) (fontaddr + 0x3cf80);
+            fontAddr = (text[i] - 0x20);
+            fontAddr = (unsigned long) (fontAddr * 16);
+            fontAddr = (unsigned long) (fontAddr + 0x3cf80);
 
-            addrHigh = (fontaddr & 0xff0000) >> 16;
-            addrMid = (fontaddr & 0xff00) >> 8;
-            addrLow = fontaddr & 0xff;
+            addrHigh = (fontAddr & 0xff0000) >> 16;
+            addrMid = (fontAddr & 0xff00) >> 8;
+            addrLow = fontAddr & 0xff;
 
             OLED_get_data_from_ROM(addrHigh, addrMid, addrLow, fontbuf, 16);
             OLED_Display_8x16(x, y, fontbuf);
