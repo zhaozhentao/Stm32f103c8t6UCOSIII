@@ -21,7 +21,7 @@ static void task(void *p_arg) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_PERIODIC, &err);
 
         OSMutexPend(&gTimeMutex, 0, OS_OPT_PEND_BLOCKING, NULL, &err);
-        gSysUnixTime++;   // µÝÔö 1 Ãë
+        gSysUnixTime++;   // é€’å¢ž 1 ç§’
         OSMutexPost(&gTimeMutex, OS_OPT_POST_NONE, &err);
     }
 }
