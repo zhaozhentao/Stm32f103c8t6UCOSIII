@@ -35,10 +35,19 @@ static void showCPU() {
 
 void showDisplayMessage(int p);
 
-static void task() {
+void pickMessage() {
     OS_MSG_SIZE msg_size;
-    OS_ERR err;
     int *p;
+
+    p = (int *) OSQPend(&TempMsgQ,0,OS_OPT_PEND_NON_BLOCKING,&msg_size,NULL,NULL);
+
+    if (*p) {
+        showDisplayMessage(*p);
+    }
+}
+
+static void task() {
+    OS_ERR err;
 
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
@@ -47,18 +56,7 @@ static void task() {
 
         showCPU();
 
-        p = (int *) OSQPend(
-                &TempMsgQ,
-                0,
-                OS_OPT_PEND_NON_BLOCKING,
-                &msg_size,
-                NULL,
-                &err
-        );
-
-        if (*p) {
-            showDisplayMessage(*p);
-        }
+        pickMessage();
     }
 }
 
