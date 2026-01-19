@@ -50,7 +50,7 @@ static void task() {
         p = (int *) OSQPend(
                 &TempMsgQ,
                 0,
-                0,
+                OS_OPT_PEND_NON_BLOCKING,
                 &msg_size,
                 NULL,
                 &err
