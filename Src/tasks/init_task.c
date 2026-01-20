@@ -1,8 +1,8 @@
 #include <os.h>
 #include "bsp.h"
 #include "oled.h"
+#include "prio.h"
 
-#define  APP_TASK_STATUS_PRIO                       5
 #define  APP_TASK_STATUS_STK_SIZE                   128
 
 void createTask1();
@@ -55,7 +55,7 @@ void createInitTask() {
                  (CPU_CHAR *) "App Init Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
-                 (OS_PRIO) APP_TASK_STATUS_PRIO,
+                 (OS_PRIO) INIT_TASK_PRIO,
                  (CPU_STK * ) & AppTaskStatusStk[0],
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE / 10,
                  (CPU_STK_SIZE) APP_TASK_STATUS_STK_SIZE,

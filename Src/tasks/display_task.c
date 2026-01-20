@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "oled.h"
+#include "prio.h"
 
 #define LED_TASK_STK_SIZE 256
 
@@ -70,7 +71,7 @@ void createTask3() {
                  (CPU_CHAR *) "LED Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
-                 (OS_PRIO) 9,
+                 (OS_PRIO) DISPLAY_TASK_PRIO,
                  (CPU_STK * ) & TaskStk[0],
                  (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
                  (CPU_STK_SIZE) LED_TASK_STK_SIZE,

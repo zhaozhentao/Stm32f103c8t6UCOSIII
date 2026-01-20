@@ -2,6 +2,7 @@
 #include <string.h>
 #include "stm32f1xx_hal.h"
 #include "uart.h"
+#include "prio.h"
 
 #define LED_TASK_STK_SIZE 128
 
@@ -46,7 +47,7 @@ void createTask1(void) {
                  (CPU_CHAR *) "LED Task",
                  (OS_TASK_PTR) task,
                  (void *) 0,
-                 (OS_PRIO) 7,
+                 (OS_PRIO) PWM_TASK_PRIO,
                  (CPU_STK * ) & LedTaskStk[0],
                  (CPU_STK_SIZE)(LED_TASK_STK_SIZE / 10u),
                  (CPU_STK_SIZE) LED_TASK_STK_SIZE,
