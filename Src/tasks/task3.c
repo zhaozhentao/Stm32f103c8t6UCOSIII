@@ -39,7 +39,7 @@ static void showCPU() {
 }
 
 // 获取 wifi 模块状态变更消息
-void showAtModuleStatus() {
+static void showAtModuleStatus() {
     OS_ERR err;
     OS_MSG_SIZE msg_size;
     int *p;
