@@ -18,15 +18,15 @@ static void task() {
 
     while (1) {
         // 设置LED亮度（通过GPIO模拟PWM效果）
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED亮
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         OSTimeDlyHMSM(0, 0, 0, brightness, OS_OPT_TIME_DLY, &err);
 
         // 熄灭LED，形成呼吸效果
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED灭
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
         OSTimeDlyHMSM(0, 0, 0, MAX_BRIGHTNESS - brightness, OS_OPT_TIME_DLY, &err);
 
         // 每隔几次循环才更新一次亮度，使变化更缓慢
-        if (counter++ < 4) {  // 每两次循环才改变一次亮度
+        if (counter++ < 4) {
             continue;
         }
 
