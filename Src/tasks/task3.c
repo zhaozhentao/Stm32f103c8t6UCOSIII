@@ -38,10 +38,11 @@ void showDisplayMessage(int p);
 
 // 获取 wifi 模块状态变更消息
 void pickMessage() {
+    OS_ERR err;
     OS_MSG_SIZE msg_size;
     int *p;
 
-    p = (int *) OSQPend(&TempMsgQ,0,OS_OPT_PEND_NON_BLOCKING,&msg_size,NULL,NULL);
+    p = (int *) OSQPend(&TempMsgQ, 0, OS_OPT_PEND_NON_BLOCKING, &msg_size, NULL, &err);
 
     if (*p) {
         showDisplayMessage(*p);
