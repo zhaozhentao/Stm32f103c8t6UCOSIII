@@ -124,6 +124,11 @@ static void sendQuery() {
         OSMutexPost(&gTimeMutex, OS_OPT_POST_NONE, &err);
 
         sendDisplayMessage(6);
+
+        OSTimeDlyHMSM(0, 0, 5, 0, OS_OPT_TIME_DLY, &err);
+
+        // 清除同步完成
+        sendDisplayMessage(7);
         return;
     }
 }

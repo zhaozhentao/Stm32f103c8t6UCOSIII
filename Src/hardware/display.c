@@ -23,6 +23,9 @@ void showDisplayMessage(int p) {
         case 6:
             sprintf(buf, "NTP同步完成... ");
             break;
+        case 7:
+            sprintf(buf, "%-16s", "");
+            break;
     }
 
     OLED_Display_GB2312_string(0, 2, buf);
