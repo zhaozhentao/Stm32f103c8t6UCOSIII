@@ -37,9 +37,9 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 Src/main.c \
-Src/tasks/task1.c \
-Src/tasks/task2.c \
-Src/tasks/task3.c \
+Src/tasks/pwm_task.c \
+Src/tasks/esp_task.c \
+Src/tasks/display_task.c \
 Src/tasks/cpu_task.c \
 Src/tasks/init_task.c \
 Src/hardware/oled.c \
