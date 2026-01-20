@@ -11,6 +11,8 @@ static OS_TCB TaskTCB;
 static CPU_STK TaskStk[LED_TASK_STK_SIZE];
 
 extern OS_Q TempMsgQ;
+
+// 全局保存的时间
 extern uint32_t gSysUnixTime;
 
 void showDisplayMessage(int p);
@@ -26,6 +28,46 @@ static void showTime() {
     strftime(buffer, sizeof(buffer), "%m/%d %H:%M:%S", tmInfo);
 
     OLED_Display_GB2312_string(0, 0, buffer);
+}
+
+// 喝水提醒：早上 8 点到晚上 6 点之间，每半小时提醒一次，每次持续 2 分钟
+static void showWaterReminder() {
+    static int lastReminderHour = -1;
+    static int lastReminderMinute = -1;
+    static CPU_BOOLEAN reminderActive = DEF_FALSE;
+    static time_t reminderEndTime = 0;
+
+    // 如果时间还没同步，直接返回
+    if (gSysUnixTime == 0) {
+        return;
+    }
+
+    time_t unixTime = gSysUnixTime;
+    struct tm *tmInfo = localtime(&unixTime);
+
+    int hour = tmInfo->tm_hour;
+    int minute = tmInfo->tm_min;
+
+    // 如果当前有提醒在显示，检查是否需要结束（2 分钟）
+    if (reminderActive && unixTime >= reminderEndTime) {
+        // 用空白覆盖提示行，清除提醒
+        OLED_Display_GB2312_string(0, 4, "                ");
+        reminderActive = DEF_FALSE;
+    }
+
+    // 只在 8:00 - 18:00 之间触发提醒（包含 8 点，不包含 18 点）
+    if (hour < 8 || hour >= 18 || minute % 30 != 0) {
+        return;
+    }
+
+    // 每个整点/半点只触发一次；如果上次是同一小时同一分钟就不再触发
+    if (!reminderActive && (hour != lastReminderHour || minute != lastReminderMinute)) {
+        OLED_Display_GB2312_string(0, 4, "Time to drink~ ");
+        reminderActive = DEF_TRUE;
+        reminderEndTime = unixTime + 120; // 持续 2 分钟
+        lastReminderHour = hour;
+        lastReminderMinute = minute;
+    }
 }
 
 // 显示 CPU 使用率
@@ -63,6 +105,9 @@ static void task() {
         showCPU();
 
         showAtModuleStatus();
+
+        // 喝水提醒
+        showWaterReminder();
     }
 }
 
