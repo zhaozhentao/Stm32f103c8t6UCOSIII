@@ -27,11 +27,13 @@ static void showTime() {
 
 // 显示 CPU 使用率
 static void showCPU() {
-    u8 display_buf[32] = {0};
+    u8 buf[18] = {0};
+    u8 tmp[18] = {0};
 
-    sprintf(display_buf, "CPU: %d.%d%%", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
+    sprintf(tmp, "CPU: %d.%d%%", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
+    sprintf(buf, "%-16s", tmp);
 
-    OLED_Display_GB2312_string(0, 6, display_buf);
+    OLED_Display_GB2312_string(0, 6, buf);
 }
 
 void showDisplayMessage(int p);
