@@ -151,7 +151,7 @@ static void ntpSync() {
     }
 
     sendDisplayMessage(3);
-    if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 10) != AT_OK) {
+    if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
         return;
     }
 
