@@ -139,6 +139,11 @@ void OLED_DisplayTurn(u8 i) {
     }
 }
 
+//送指令到晶联讯字库IC
+void Send_Command_to_ROM(u8 dat) {
+    HAL_SPI_Transmit(&hspi1, &dat, 1, 10);
+}
+
 //显示8x16点阵图像、ASCII, 或8x16点阵的自造字符、其他图标
 void OLED_Display_8x16(u8 x, u8 y, u8 *dp) {
     u8 i, j;
@@ -152,11 +157,6 @@ void OLED_Display_8x16(u8 x, u8 y, u8 *dp) {
     }
 }
 
-//送指令到晶联讯字库IC
-void Send_Command_to_ROM(u8 dat) {
-    HAL_SPI_Transmit(&hspi1, &dat, 1, 10);
-}
-
 //显示16x16点阵图像、汉字、生僻字或16x16点阵的其他图标
 void OLED_Display_16x16(u8 x, u8 y, u8 *dp) {
     u8 i, j;
@@ -167,6 +167,18 @@ void OLED_Display_16x16(u8 x, u8 y, u8 *dp) {
             dp++;
         }
         y++;
+    }
+}
+
+//显示128x64点阵图像
+void OLED_Display_128x64(u8 *dp) {
+    u8 i, j;
+    for (i = 0; i < 8; i++) {
+        OLED_address(0, i);
+        for (j = 0; j < 128; j++) {
+            OLED_WR_Byte(*dp, OLED_DATA); //写数据到OLED,每写完一个8位的数据后列地址自动加1
+            dp++;
+        }
     }
 }
 
