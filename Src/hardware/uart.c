@@ -5,7 +5,7 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 uint8_t rx_byte;
-uint8_t rx_buf[256];
+uint8_t rx_buf[1024];
 uint16_t rx_len = 0;
 uint8_t uart_rx_finished = 0;
 

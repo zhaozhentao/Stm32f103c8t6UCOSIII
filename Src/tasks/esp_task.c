@@ -47,7 +47,7 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
 
     rx_len = 0;
     uart_rx_finished = 0;
-    memset(rx_buf, 0, 256);
+    memset(rx_buf, 0, 1024);
 
     HAL_UART_Transmit(&huart2, (uint8_t *) cmd, strlen(cmd), 50);
 
@@ -134,6 +134,13 @@ static void sendQuery() {
     }
 }
 
+/*
+ * 检查当前连接状态 AT+CIFSR
+ * 如果已经连接返回: +CIFSR:STAIP,"192.168.31.224"
+ *                +CIFSR:STAMAC,"e0:98:06:81:63:91"
+ * 没有连接返回:    ERROR
+ */
+
 static void ntpSync() {
     if (gSysUnixTime != 0) {
         // 已经同步时间
@@ -168,6 +175,65 @@ static void ntpSync() {
     sendQuery();
 }
 
+static void sendWeatherQuery() {
+    OS_ERR err;
+    int timeoutSec = 10;
+    char str[] = "GET /v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
+    "Host: api.open-meteo.com\n"
+    "Connection: close\r\n\r\n";
+
+    rx_len = 0;
+    uart_rx_finished = 0;
+    memset(rx_buf, 0, 1024);
+
+    HAL_UART_Transmit(&huart2, str, sizeof(str), 100);
+
+    while (timeoutSec-- > 0) {
+        OSTimeDlyHMSM(0, 0, 0, 500, OS_OPT_TIME_DLY, &err);
+
+        char *found = strstr(rx_buf, "CLOSED");
+
+        if (found != NULL) {
+            // 清除同步完成
+            sendDisplayMessage(8);
+            OSTimeDlyHMSM(0, 0, 2000, 0, OS_OPT_TIME_DLY, &err);
+            return;
+        }
+    }
+
+    sendDisplayMessage(9);
+    OSTimeDlyHMSM(0, 0, 2000, 0, OS_OPT_TIME_DLY, &err);
+}
+
+static void weather() {
+    sendDisplayMessage(1);
+    if (sendATCmd("AT\r\n", "OK", 4) != AT_OK) {
+        return;
+    }
+
+    sendDisplayMessage(2);
+    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
+        return;
+    }
+
+    sendDisplayMessage(3);
+    if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
+        return;
+    }
+
+    sendDisplayMessage(4);
+    if (sendATCmd("AT+CIPSTART=\"TCP\",\"api.open-meteo.com\",80\r\n", "CONNECT", 10) != AT_OK) {
+        return;
+    }
+
+    sendDisplayMessage(5);
+    if (sendATCmd("AT+CIPSEND=152\r\n", "OK", 6) != AT_OK) {
+        return;
+    }
+
+    sendWeatherQuery();
+}
+
 static void task() {
     OS_ERR err;
 
@@ -177,7 +243,8 @@ static void task() {
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-        ntpSync();
+//        ntpSync();
+        weather();
     }
 }
 

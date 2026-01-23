@@ -26,6 +26,12 @@ void showDisplayMessage(int p) {
         case 7:
             sprintf(buf, "%-16s", "");
             break;
+        case 8:
+            sprintf(buf, "查询天气成功");
+            break;
+        case 9:
+            sprintf(buf, "查询天气超时");
+            break;
     }
 
     OLED_Display_GB2312_string(0, 2, buf);

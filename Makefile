@@ -68,6 +68,7 @@ Core/Src/system_stm32f1xx.c \
 Core/Src/sysmem.c \
 Core/Src/syscalls.c \
 APP/os_app_hooks.c \
+Middlewares/json/cJSON.c \
 Middlewares/uC-CPU/cpu_core.c \
 Middlewares/uC-CPU/ARM-Cortex-M3/RealView/cpu_c.c \
 Middlewares/uCOS-III/Ports/ARM-Cortex-M3/Generic/RealView/os_cpu_c.c \
@@ -162,6 +163,7 @@ C_INCLUDES =  \
 -IBSP \
 -IBSP/led \
 -IAPP \
+-IMiddlewares/json \
 -IMiddlewares/uC-CPU/ARM-Cortex-M3/RealView \
 -IMiddlewares/uC-CPU \
 -IMiddlewares/uC-LIB \
