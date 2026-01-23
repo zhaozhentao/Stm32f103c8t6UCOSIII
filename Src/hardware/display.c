@@ -9,28 +9,34 @@ void showDisplayMessage(int p) {
             sprintf(buf, "正在检测Wifi模块");
             break;
         case 2:
-            sprintf(buf, "Wifi模块初始化..");
+            sprintf(buf, "%-16s", "查询IP...");
             break;
         case 3:
-            sprintf(buf, "正在连接热点... ");
+            sprintf(buf, "%-16s", "设置AP模式...");
             break;
         case 4:
-            sprintf(buf, "Connecting NTP");
+            sprintf(buf, "%-16s", "正在连接WIFI...");
             break;
         case 5:
-            sprintf(buf, "Synchronizing ");
+            sprintf(buf, "%-16s", "建立HTTP请求...");
             break;
         case 6:
-            sprintf(buf, "NTP同步完成... ");
+            sprintf(buf, "%-16s", "设置请求长度...");
             break;
         case 7:
-            sprintf(buf, "%-16s", "");
+            sprintf(buf, "%-16s", "查询天气成功");
             break;
         case 8:
-            sprintf(buf, "查询天气成功");
+            sprintf(buf, "%-16s", "查询天气超时");
             break;
         case 9:
-            sprintf(buf, "查询天气超时");
+            sprintf(buf, "%-16s", "");
+            break;
+        case 10:
+            sprintf(buf, "%-16s", "建立NTP连接...");
+            break;
+        case 11:
+            sprintf(buf, "%-16s", "NTP同步成功...");
             break;
     }
 

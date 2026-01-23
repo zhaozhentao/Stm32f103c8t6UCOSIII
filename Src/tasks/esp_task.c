@@ -8,7 +8,7 @@
 
 #define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 差值秒数
 
-#define UART_BUFFER_LENGTH 256
+#define UART_BUFFER_LENGTH 1024
 
 #define LED_TASK_STK_SIZE 512
 
@@ -35,6 +35,9 @@ PUTCHAR_PROTOTYPE {
     HAL_UART_Transmit(&huart1, (uint8_t * ) & ch, 1, 50);
     return ch;
 }
+
+const char* AT = "AT\r\n";
+const char* AT_CIFSR = "AT+CIFSR\r\n";
 
 typedef enum {
     AT_OK,
@@ -67,7 +70,7 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     return AT_TIMEOUT;
 }
 
-int findLastNonZeroIndex() {
+static int findLastNonZeroIndex() {
     // 从最后一个索引（255）开始向前遍历
     for (int i = UART_BUFFER_LENGTH - 1; i >= 0; i--) {
         // 找到第一个非0元素，返回索引
@@ -124,12 +127,12 @@ static void sendQuery() {
         gSysUnixTime = secs_since_1900 - NTP_TIMESTAMP_DELTA + (8 * 3600);
         OSMutexPost(&gTimeMutex, OS_OPT_POST_NONE, &err);
 
-        sendDisplayMessage(6);
+        sendDisplayMessage(11);
 
         OSTimeDlyHMSM(0, 0, 5, 0, OS_OPT_TIME_DLY, &err);
 
         // 清除同步完成
-        sendDisplayMessage(7);
+        sendDisplayMessage(9);
         return;
     }
 }
@@ -148,26 +151,29 @@ static void ntpSync() {
     }
 
     sendDisplayMessage(1);
-    if (sendATCmd("AT\r\n", "OK", 4) != AT_OK) {
+    if (sendATCmd(AT, "OK", 4) != AT_OK) {
         return;
     }
 
     sendDisplayMessage(2);
-    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
-        return;
+    if (sendATCmd(AT_CIFSR, "STAIP", 6) != AT_OK) {
+        sendDisplayMessage(3);
+        if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
+            return;
+        }
+
+        sendDisplayMessage(4);
+        if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
+            return;
+        }
     }
 
-    sendDisplayMessage(3);
-    if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
-        return;
-    }
-
-    sendDisplayMessage(4);
+    sendDisplayMessage(10);
     if (sendATCmd("AT+CIPSTART=\"UDP\",\"ntp.aliyun.com\",123\r\n", "CONNECTED", 10) != AT_OK) {
         return;
     }
 
-    sendDisplayMessage(5);
+    sendDisplayMessage(6);
     if (sendATCmd("AT+CIPSEND=48\r\n", "OK", 6) != AT_OK) {
         return;
     }
@@ -195,38 +201,43 @@ static void sendWeatherQuery() {
 
         if (found != NULL) {
             // 清除同步完成
-            sendDisplayMessage(8);
+            sendDisplayMessage(7);
             OSTimeDlyHMSM(0, 0, 2000, 0, OS_OPT_TIME_DLY, &err);
             return;
         }
     }
 
-    sendDisplayMessage(9);
+    sendDisplayMessage(8);
     OSTimeDlyHMSM(0, 0, 2000, 0, OS_OPT_TIME_DLY, &err);
 }
 
 static void weather() {
     sendDisplayMessage(1);
-    if (sendATCmd("AT\r\n", "OK", 4) != AT_OK) {
+    if (sendATCmd(AT, "OK", 4) != AT_OK) {
         return;
     }
 
     sendDisplayMessage(2);
-    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
-        return;
+    if (sendATCmd(AT_CIFSR, "STAIP", 6) != AT_OK) {
+        sendDisplayMessage(3);
+        if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
+            return;
+        }
+
+        sendDisplayMessage(4);
+        if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
+            return;
+        }
     }
 
-    sendDisplayMessage(3);
-    if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
-        return;
-    }
-
-    sendDisplayMessage(4);
+    // 已经连接 wifi
+    sendDisplayMessage(5);
     if (sendATCmd("AT+CIPSTART=\"TCP\",\"api.open-meteo.com\",80\r\n", "CONNECT", 10) != AT_OK) {
         return;
     }
 
-    sendDisplayMessage(5);
+    // 设置请求长度
+    sendDisplayMessage(6);
     if (sendATCmd("AT+CIPSEND=152\r\n", "OK", 6) != AT_OK) {
         return;
     }
@@ -243,7 +254,8 @@ static void task() {
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-//        ntpSync();
+        ntpSync();
+
         weather();
     }
 }
