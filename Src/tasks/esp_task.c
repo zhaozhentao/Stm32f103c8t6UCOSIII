@@ -88,6 +88,28 @@ static void sendDisplayMessage(int p) {
     OSQPost(&TempMsgQ, &process, sizeof(process), OS_OPT_POST_FIFO, 0);
 }
 
+static AT_Status checkNetwork() {
+    sendDisplayMessage(1);
+    if (sendATCmd(AT, "OK", 4) != AT_OK) {
+        return AT_ERROR;
+    }
+
+    sendDisplayMessage(2);
+    if (sendATCmd(AT_CIFSR, "STAIP", 6) != AT_OK) {
+        sendDisplayMessage(3);
+        if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
+            return AT_ERROR;
+        }
+
+        sendDisplayMessage(4);
+        if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
+            return AT_ERROR;
+        }
+    }
+
+    return AT_OK;
+}
+
 static void sendQuery() {
     OS_ERR err;
     int timeoutSec = 10;
@@ -150,22 +172,8 @@ static void ntpSync() {
         return;
     }
 
-    sendDisplayMessage(1);
-    if (sendATCmd(AT, "OK", 4) != AT_OK) {
+    if (checkNetwork() != AT_OK) {
         return;
-    }
-
-    sendDisplayMessage(2);
-    if (sendATCmd(AT_CIFSR, "STAIP", 6) != AT_OK) {
-        sendDisplayMessage(3);
-        if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
-            return;
-        }
-
-        sendDisplayMessage(4);
-        if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
-            return;
-        }
     }
 
     sendDisplayMessage(10);
@@ -212,22 +220,8 @@ static void sendWeatherQuery() {
 }
 
 static void weather() {
-    sendDisplayMessage(1);
-    if (sendATCmd(AT, "OK", 4) != AT_OK) {
+    if (checkNetwork() != AT_OK) {
         return;
-    }
-
-    sendDisplayMessage(2);
-    if (sendATCmd(AT_CIFSR, "STAIP", 6) != AT_OK) {
-        sendDisplayMessage(3);
-        if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
-            return;
-        }
-
-        sendDisplayMessage(4);
-        if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
-            return;
-        }
     }
 
     // 已经连接 wifi
@@ -238,7 +232,7 @@ static void weather() {
 
     // 设置请求长度
     sendDisplayMessage(6);
-    if (sendATCmd("AT+CIPSEND=152\r\n", "OK", 6) != AT_OK) {
+    if (sendATCmd("AT+CIPSEND=153\r\n", "OK", 6) != AT_OK) {
         return;
     }
 
