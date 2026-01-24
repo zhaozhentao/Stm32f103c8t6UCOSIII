@@ -45,6 +45,19 @@ typedef enum {
     AT_TIMEOUT
 } AT_Status;
 
+static void showError() {
+    OS_ERR err;
+    int i = 0;
+    char tmp[17];
+
+    while (i < rx_len) {
+        snprintf(tmp, 16, "%-16s", rx_buf + i);
+        OLED_Display_GB2312_string(0, 4, tmp);
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+        i += 16;
+    }
+}
+
 static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     OS_ERR err;
 
@@ -186,6 +199,12 @@ static void ntpSync() {
     }
 
     sendQuery();
+
+    // udp 连接需要关闭，否则影响后续的 tcp 连接
+    sendDisplayMessage(12);
+    if (sendATCmd("AT+CIPCLOSE\r\n", "OK", 6) != AT_OK) {
+        return;
+    }
 }
 
 static const unsigned char str[] =
@@ -196,7 +215,6 @@ static const unsigned char str[] =
 static void sendWeatherQuery() {
     OS_ERR err;
     int timeoutSec = 10;
-    char tmp[17] = {};
 
     rx_len = 0;
     uart_rx_finished = 0;
@@ -207,18 +225,18 @@ static void sendWeatherQuery() {
     while (timeoutSec-- > 0) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-        char *found = strstr(rx_buf, "Recv 153");
+        char *found = strstr(rx_buf, "CLOSED");
 
         if (found != NULL) {
             // 清除同步完成
             sendDisplayMessage(7);
-            OSTimeDlyHMSM(0, 0, 4000, 0, OS_OPT_TIME_DLY, &err);
+            OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
             return;
         }
     }
 
     sendDisplayMessage(8);
-    OSTimeDlyHMSM(0, 0, 2000, 0, OS_OPT_TIME_DLY, &err);
+    OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 }
 
 static void weather() {
@@ -228,7 +246,7 @@ static void weather() {
 
     // 已经连接 wifi
     sendDisplayMessage(5);
-    if (sendATCmd("AT+CIPSTART=\"TCP\",\"api.open-meteo.com\",80\r\n", "CONNECT", 10) != AT_OK) {
+    if (sendATCmd("AT+CIPSTART=\"TCP\",\"api.open-meteo.com\",80\r\n", "OK", 10) != AT_OK) {
         return;
     }
 
