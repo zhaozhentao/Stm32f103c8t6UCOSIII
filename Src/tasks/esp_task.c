@@ -22,7 +22,7 @@
 extern uint8_t uart_rx_finished;
 extern uint8_t rx_byte;
 extern uint16_t rx_len;
-extern uint8_t rx_buf[UART_BUFFER_LENGTH];
+extern char rx_buf[UART_BUFFER_LENGTH];
 extern uint32_t gSysUnixTime;
 extern OS_MUTEX gTimeMutex;
 extern OS_Q TempMsgQ;
@@ -102,7 +102,7 @@ static AT_Status checkNetwork() {
         }
 
         sendDisplayMessage(4);
-        if (sendATCmd("AT+CWJAP=\"Yu\",\"qwertyuiop\"\r\n", "OK", 14) != AT_OK) {
+        if (sendATCmd("AT+CWJAP=\"zhao1003\",\"zhaozhao\"\r\n", "OK", 14) != AT_OK) {
             return AT_ERROR;
         }
     }
@@ -160,12 +160,10 @@ static void sendQuery() {
 }
 
 /*
- * 检查当前连接状态 AT+CIFSR
- * 如果已经连接返回: +CIFSR:STAIP,"192.168.31.224"
- *                +CIFSR:STAMAC,"e0:98:06:81:63:91"
- * 没有连接返回:    ERROR
+ * 检查连接状态 AT+CWJAP?
+ * 未连接返回   No AP
+ * 已连接返回   +CWJAP:"Yu","5a:41:44:0d:3d:7b",6,-19,0
  */
-
 static void ntpSync() {
     if (gSysUnixTime != 0) {
         // 已经同步时间
@@ -189,28 +187,30 @@ static void ntpSync() {
     sendQuery();
 }
 
+static const unsigned char str[] =
+        "GET /v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
+        "Host: api.open-meteo.com\n"
+        "Connection: close\n\n\r\n";
 static void sendWeatherQuery() {
     OS_ERR err;
     int timeoutSec = 10;
-    char str[] = "GET /v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
-    "Host: api.open-meteo.com\n"
-    "Connection: close\r\n\r\n";
+    char tmp[17] = {};
 
     rx_len = 0;
     uart_rx_finished = 0;
     memset(rx_buf, 0, 1024);
 
-    HAL_UART_Transmit(&huart2, str, sizeof(str), 100);
+    HAL_UART_Transmit(&huart2, (uint8_t *) str, sizeof(str) - 1, 200);
 
     while (timeoutSec-- > 0) {
-        OSTimeDlyHMSM(0, 0, 0, 500, OS_OPT_TIME_DLY, &err);
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-        char *found = strstr(rx_buf, "CLOSED");
+        char *found = strstr(rx_buf, "Recv 153");
 
         if (found != NULL) {
             // 清除同步完成
             sendDisplayMessage(7);
-            OSTimeDlyHMSM(0, 0, 2000, 0, OS_OPT_TIME_DLY, &err);
+            OSTimeDlyHMSM(0, 0, 4000, 0, OS_OPT_TIME_DLY, &err);
             return;
         }
     }
@@ -232,7 +232,7 @@ static void weather() {
 
     // 设置请求长度
     sendDisplayMessage(6);
-    if (sendATCmd("AT+CIPSEND=153\r\n", "OK", 6) != AT_OK) {
+    if (sendATCmd("AT+CIPSEND=150\r\n", ">", 6) != AT_OK) {
         return;
     }
 
@@ -246,7 +246,7 @@ static void task() {
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
     while (1) {
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+        OSTimeDlyHMSM(0, 0, 4, 0, OS_OPT_TIME_DLY, &err);
 
         ntpSync();
 

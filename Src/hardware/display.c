@@ -24,10 +24,10 @@ void showDisplayMessage(int p) {
             sprintf(buf, "%-16s", "设置请求长度...");
             break;
         case 7:
-            sprintf(buf, "%-16s", "查询天气成功");
+            sprintf(buf, "%-16s", "查询天气成功   ");
             break;
         case 8:
-            sprintf(buf, "%-16s", "查询天气超时");
+            sprintf(buf, "%-16s", "查询天气超时   ");
             break;
         case 9:
             sprintf(buf, "%-16s", "");
