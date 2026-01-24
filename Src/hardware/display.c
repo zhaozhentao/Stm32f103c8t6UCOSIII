@@ -49,7 +49,7 @@ void showDisplayMessage(int p) {
 void showTemperature(char *temperature) {
     char tmp[17] = {0};
 
-    sprintf(tmp, "ÎÂ¶È: %s¡æ", temperature);
+    sprintf(tmp, "ÆøÎÂ: %s¡æ", temperature);
 
     OLED_Display_GB2312_string(0, 2, tmp);
 }
