@@ -202,7 +202,7 @@ static void sendWeatherQuery() {
     uart_rx_finished = 0;
     memset(rx_buf, 0, 1024);
 
-    HAL_UART_Transmit(&huart2, (uint8_t *) str, sizeof(str) - 1, 200);
+    HAL_UART_Transmit(&huart2, str, sizeof(str) - 1, 200);
 
     while (timeoutSec-- > 0) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
