@@ -39,7 +39,7 @@ PUTCHAR_PROTOTYPE {
 }
 
 const char *AT = "AT\r\n";
-const char *AT_CIFSR = "AT+CIFSR\r\n";
+const char *AT_CWJAP = "AT+CWJAP?\r\n";
 
 typedef enum {
     AT_OK,
@@ -111,7 +111,7 @@ static AT_Status checkNetwork() {
     }
 
     sendDisplayMessage(2);
-    if (sendATCmd(AT_CIFSR, "STAIP", 6) != AT_OK) {
+    if (sendATCmd(AT_CWJAP, "CWJAP", 6) != AT_OK) {
         sendDisplayMessage(3);
         if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
             return AT_ERROR;
@@ -307,6 +307,8 @@ static void task() {
 
     // 在 OS 启动后才能开启中断，否则 CPU 统计有问题
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+
+    showTemperature("");
 
     while (1) {
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
