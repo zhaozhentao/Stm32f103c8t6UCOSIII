@@ -39,9 +39,9 @@ void showDisplayMessage(int p) {
             sprintf(buf, "%-16s", "NTP同步成功...");
             break;
         case 12:
-            sprintf(buf, "%-16s", "断开TCP连接...");
+            sprintf(buf, "%-16s", "断开连接...");
             break;
     }
 
-    OLED_Display_GB2312_string(0, 2, buf);
+    OLED_Display_GB2312_string(0, 6, buf);
 }

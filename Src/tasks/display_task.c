@@ -78,7 +78,7 @@ static void showCPU() {
     sprintf(tmp, "CPU: %d.%d%%", OSStatTaskCPUUsage / 100, OSStatTaskCPUUsage % 100);
     sprintf(buf, "%-16s", tmp);
 
-    OLED_Display_GB2312_string(0, 6, buf);
+    OLED_Display_GB2312_string(0, 4, buf);
 }
 
 // 获取 wifi 模块状态变更消息

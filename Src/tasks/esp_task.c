@@ -179,6 +179,8 @@ static void sendQuery() {
  * 已连接返回   +CWJAP:"Yu","5a:41:44:0d:3d:7b",6,-19,0
  */
 static void ntpSync() {
+    OS_ERR err;
+
     if (gSysUnixTime != 0) {
         // 已经同步时间
         return;
@@ -205,6 +207,9 @@ static void ntpSync() {
     if (sendATCmd("AT+CIPCLOSE\r\n", "OK", 6) != AT_OK) {
         return;
     }
+
+    OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+    sendDisplayMessage(9);
 }
 
 static const unsigned char str[] =
@@ -212,9 +217,10 @@ static const unsigned char str[] =
         "Host: api.open-meteo.com\n"
         "Connection: close\n\n\r\n";
 
+char temperature[16] = {};  // 存放温度
+
 static void parseTemperature() {
     char tmp[17] = {0};
-    char temperature[16] = {};  // 存放温度
 
     char *cw = strstr(rx_buf, "\"current_weather\"");
     if (cw == NULL) {
@@ -238,7 +244,7 @@ static void parseTemperature() {
 
     sprintf(tmp, "temp: %s℃", temperature);
 
-    OLED_Display_GB2312_string(0, 4, tmp);
+    OLED_Display_GB2312_string(0, 2, tmp);
 }
 
 static void sendWeatherQuery() {
@@ -263,15 +269,19 @@ static void sendWeatherQuery() {
         parseTemperature();
 
         sendDisplayMessage(7);
-        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
         return;
     }
 
     sendDisplayMessage(8);
-    OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 }
 
 static void weather() {
+    OS_ERR err;
+
+    if (strlen(temperature) != 0) {
+        return;
+    }
+
     if (checkNetwork() != AT_OK) {
         return;
     }
@@ -289,6 +299,9 @@ static void weather() {
     }
 
     sendWeatherQuery();
+
+    OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+    sendDisplayMessage(9);
 }
 
 static void task() {
@@ -298,7 +311,7 @@ static void task() {
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
     while (1) {
-        OSTimeDlyHMSM(0, 0, 4, 0, OS_OPT_TIME_DLY, &err);
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
         ntpSync();
 
