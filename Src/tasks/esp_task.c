@@ -111,16 +111,18 @@ static AT_Status checkNetwork() {
     }
 
     sendDisplayMessage(2);
-    if (sendATCmd(AT_CWJAP, "CWJAP", 6) != AT_OK) {
-        sendDisplayMessage(3);
-        if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
-            return AT_ERROR;
-        }
+    if (sendATCmd(AT_CWJAP, "CWJAP", 6) == AT_OK) {
+        return AT_OK;
+    }
 
-        sendDisplayMessage(4);
-        if (sendATCmd("AT+CWJAP=\"zhao1003\",\"zhaozhao\"\r\n", "OK", 14) != AT_OK) {
-            return AT_ERROR;
-        }
+    sendDisplayMessage(3);
+    if (sendATCmd("AT+CWMODE=1\r\n", "OK", 4) != AT_OK) {
+        return AT_ERROR;
+    }
+
+    sendDisplayMessage(4);
+    if (sendATCmd("AT+CWJAP=\"zhao1003\",\"zhaozhao\"\r\n", "OK", 14) != AT_OK) {
+        return AT_ERROR;
     }
 
     return AT_OK;
