@@ -86,18 +86,6 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
     return AT_TIMEOUT;
 }
 
-static int findLastNonZeroIndex() {
-    // 从最后一个索引（255）开始向前遍历
-    for (int i = UART_BUFFER_LENGTH - 1; i >= 0; i--) {
-        // 找到第一个非0元素，返回索引
-        if (rx_buf[i] != 0) {
-            return i;
-        }
-    }
-    // 数组全为0
-    return -1;
-}
-
 static void sendDisplayMessage(int p) {
     process = p;
 
@@ -150,7 +138,7 @@ static void sendQuery() {
         }
 
         // 认为接收完成
-        if (findLastNonZeroIndex() != 85) {
+        if (rx_len != 86) {
             continue;
         }
 
