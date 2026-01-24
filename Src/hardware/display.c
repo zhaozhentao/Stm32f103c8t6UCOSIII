@@ -45,3 +45,11 @@ void showDisplayMessage(int p) {
 
     OLED_Display_GB2312_string(0, 6, buf);
 }
+
+void showTemperature(char *temperature) {
+    char tmp[17] = {0};
+
+    sprintf(tmp, "ÎÂ¶È: %s¡æ", temperature);
+
+    OLED_Display_GB2312_string(0, 2, tmp);
+}

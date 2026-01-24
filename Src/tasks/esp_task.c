@@ -27,6 +27,8 @@ extern uint32_t gSysUnixTime;
 extern OS_MUTEX gTimeMutex;
 extern OS_Q TempMsgQ;
 
+void showTemperature(char *temperature);
+
 int process = 0;
 OS_TCB UartTaskTCB;
 CPU_STK UartTaskStk[LED_TASK_STK_SIZE];
@@ -213,15 +215,13 @@ static void ntpSync() {
 }
 
 static const unsigned char str[] =
-        "GET /v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
+        "GET /v1/forecast?latitude=23.0200&longitude=113.1200&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
         "Host: api.open-meteo.com\n"
         "Connection: close\n\n\r\n";
 
 char temperature[16] = {};  // ´æ·ÅÎÂ¶È
 
 static void parseTemperature() {
-    char tmp[17] = {0};
-
     char *cw = strstr(rx_buf, "\"current_weather\"");
     if (cw == NULL) {
         return;
@@ -242,9 +242,7 @@ static void parseTemperature() {
     }
     temperature[i] = '\0';
 
-    sprintf(tmp, "temp: %s¡æ", temperature);
-
-    OLED_Display_GB2312_string(0, 2, tmp);
+    showTemperature(temperature);
 }
 
 static void sendWeatherQuery() {
