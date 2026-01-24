@@ -169,7 +169,7 @@ static void sendQuery() {
 
         sendDisplayMessage(11);
 
-        OSTimeDlyHMSM(0, 0, 5, 0, OS_OPT_TIME_DLY, &err);
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
         // 清除同步完成
         sendDisplayMessage(9);
