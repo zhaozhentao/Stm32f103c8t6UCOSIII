@@ -212,6 +212,35 @@ static const unsigned char str[] =
         "Host: api.open-meteo.com\n"
         "Connection: close\n\n\r\n";
 
+static void parseTemperature() {
+    char tmp[17] = {0};
+    char temperature[16] = {};  // 存放温度
+
+    char *cw = strstr(rx_buf, "\"current_weather\"");
+    if (cw == NULL) {
+        return;
+    }
+
+    char *p = strstr(cw, "\"temperature\":");
+    if (p == NULL) {
+        return;
+    }
+
+    p += strlen("\"temperature\":"); // 跳过 "temperature":
+
+    // 拷贝数字直到遇到非数字、小数点、负号
+    int i = 0;
+    while ((*p == '-' || *p == '+' || *p == '.' || (*p >= '0' && *p <= '9')) && i < 15) {
+        temperature[i++] = *p;
+        p++;
+    }
+    temperature[i] = '\0';
+
+    sprintf(tmp, "temp: %s℃", temperature);
+
+    OLED_Display_GB2312_string(0, 4, tmp);
+}
+
 static void sendWeatherQuery() {
     OS_ERR err;
     int timeoutSec = 10;
@@ -231,29 +260,8 @@ static void sendWeatherQuery() {
             continue;
         }
 
-        char tempStr[16];  // 放结果，比如 "-0.3"
+        parseTemperature();
 
-        char *cw = strstr(rx_buf, "\"current_weather\"");
-        if (cw) {
-            char *p = strstr(cw, "\"temperature\":");
-            if (p) {
-                p += strlen("\"temperature\":"); // 跳过 "temperature":
-
-                // 指向数字起始位置（可能是-号或数字）
-                char *start = p;
-
-                // 拷贝数字直到遇到非数字、小数点、负号
-                int i = 0;
-                while ((*p == '-' || *p == '+' || *p == '.' || (*p >= '0' && *p <= '9')) && i < 15) {
-                    tempStr[i++] = *p;
-                    p++;
-                }
-                tempStr[i] = '\0';  // 结尾
-                OLED_Display_GB2312_string(0, 4, tempStr);
-            }
-        }
-
-        // 清除同步完成
         sendDisplayMessage(7);
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
         return;
