@@ -227,12 +227,36 @@ static void sendWeatherQuery() {
 
         char *found = strstr(rx_buf, "CLOSED");
 
-        if (found != NULL) {
-            // 清除同步完成
-            sendDisplayMessage(7);
-            OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
-            return;
+        if (found == NULL) {
+            continue;
         }
+
+        char tempStr[16];  // 放结果，比如 "-0.3"
+
+        char *cw = strstr(rx_buf, "\"current_weather\"");
+        if (cw) {
+            char *p = strstr(cw, "\"temperature\":");
+            if (p) {
+                p += strlen("\"temperature\":"); // 跳过 "temperature":
+
+                // 指向数字起始位置（可能是-号或数字）
+                char *start = p;
+
+                // 拷贝数字直到遇到非数字、小数点、负号
+                int i = 0;
+                while ((*p == '-' || *p == '+' || *p == '.' || (*p >= '0' && *p <= '9')) && i < 15) {
+                    tempStr[i++] = *p;
+                    p++;
+                }
+                tempStr[i] = '\0';  // 结尾
+                OLED_Display_GB2312_string(0, 4, tempStr);
+            }
+        }
+
+        // 清除同步完成
+        sendDisplayMessage(7);
+        OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
+        return;
     }
 
     sendDisplayMessage(8);
