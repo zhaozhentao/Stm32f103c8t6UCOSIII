@@ -36,8 +36,8 @@ PUTCHAR_PROTOTYPE {
     return ch;
 }
 
-const char* AT = "AT\r\n";
-const char* AT_CIFSR = "AT+CIFSR\r\n";
+const char *AT = "AT\r\n";
+const char *AT_CIFSR = "AT+CIFSR\r\n";
 
 typedef enum {
     AT_OK,
@@ -63,7 +63,8 @@ static AT_Status sendATCmd(char *cmd, char *expect, int timeoutSec) {
 
         if (strstr((char *) rx_buf, expect) != NULL)
             return AT_OK;
-        else if (strstr((char *) rx_buf, "ERROR") != NULL)
+
+        if (strstr((char *) rx_buf, "ERROR") != NULL)
             return AT_ERROR;
     }
 
@@ -191,6 +192,7 @@ static const unsigned char str[] =
         "GET /v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
         "Host: api.open-meteo.com\n"
         "Connection: close\n\n\r\n";
+
 static void sendWeatherQuery() {
     OS_ERR err;
     int timeoutSec = 10;
