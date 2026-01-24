@@ -19,7 +19,6 @@ u32 fontAddr = 0;
 #define OLED_DATA 1    //写数据
 
 extern SPI_HandleTypeDef hspi1;
-extern OS_MUTEX spiMutex;
 
 // GND
 // VCC
@@ -35,8 +34,6 @@ extern OS_MUTEX spiMutex;
 void OLED_WR_Byte(u8 dat, u8 cmd) {
     OS_ERR err;
     OS_TICK ts;
-
-    OSMutexPend(&spiMutex, 0, OS_OPT_PEND_BLOCKING, &ts, &err);
 
     // 1. 控制 DC
     if (cmd)
@@ -54,8 +51,6 @@ void OLED_WR_Byte(u8 dat, u8 cmd) {
 
     // 4. 拉高 CS ? 结束 SPI 会话
     OLED_DC_Set();
-
-    OSMutexPost(&spiMutex, OS_OPT_POST_NONE, &err);
 }
 
 //清屏函数
