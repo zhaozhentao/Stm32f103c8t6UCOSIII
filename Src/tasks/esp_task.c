@@ -210,6 +210,7 @@ static const unsigned char str[] =
         "Connection: close\n\n\r\n";
 
 char temperature[16] = {};  // 存放温度
+static uint32_t lastWeatherUpdateTime = 0;  // 上次更新天气的时间戳
 
 static void parseTemperature() {
     char *cw = strstr(rx_buf, "\"current_weather\"");
@@ -265,9 +266,23 @@ static void sendWeatherQuery() {
 
 static void weather() {
     OS_ERR err;
+    uint32_t currentTime;
+    const uint32_t UPDATE_INTERVAL = 300;  // 5分钟 = 300秒
 
-    if (strlen(temperature) != 0) {
+    // 获取当前时间
+    currentTime = gSysUnixTime;
+
+    // 如果系统时间未同步，不更新天气
+    if (currentTime == 0) {
         return;
+    }
+
+    // 检查是否需要更新（首次更新或距离上次更新超过5分钟）
+    if (lastWeatherUpdateTime != 0) {
+        uint32_t elapsed = currentTime - lastWeatherUpdateTime;
+        if (elapsed < UPDATE_INTERVAL) {
+            return;
+        }
     }
 
     if (checkNetwork() != AT_OK) {
@@ -286,7 +301,14 @@ static void weather() {
         return;
     }
 
+    // 清空温度，以便判断本次更新是否成功
+    temperature[0] = '\0';
     sendWeatherQuery();
+
+    // 更新成功后才更新时间戳
+    if (strlen(temperature) != 0) {
+        lastWeatherUpdateTime = currentTime;
+    }
 
     OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
     sendDisplayMessage(9);
