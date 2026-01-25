@@ -6,14 +6,14 @@
 #include "oled.h"
 #include "prio.h"
 
-#define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 ²îÖµÃëÊı
+#define NTP_TIMESTAMP_DELTA 2208988800ull  // 1970 - 1900 å·®å€¼ç§’æ•°
 
 #define UART_BUFFER_LENGTH 1024
 
 #define LED_TASK_STK_SIZE 512
 
 #ifdef __GNUC__
-/* Ê¹ÓÃ GCC ±àÒëÆ÷ */
+/* ä½¿ç”¨ GCC ç¼–è¯‘å™¨ */
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 #else
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
@@ -137,14 +137,14 @@ static void sendQuery() {
             continue;
         }
 
-        // ÈÏÎª½ÓÊÕÍê³É
+        // è®¤ä¸ºæ¥æ”¶å®Œæˆ
         if (rx_len != 86) {
             continue;
         }
 
         uart_rx_finished = 0;
-        // Ò»¹² 86 ×Ö½Ú
-        // »áÊÕµ½ÕâÑùµÄÏìÓ¦ 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
+        // ä¸€å…± 86 å­—èŠ‚
+        // ä¼šæ”¶åˆ°è¿™æ ·çš„å“åº” 0D 0A 52 65 63 76 20 34 38 20 62 79 74 65 73 0D 0A 0D 0A 53 45 4E 44 20 4F 4B 0D 0A 0D 0A 2B 49 50 44 2C 34 38 3A 1C 02 00 E7 00 00 04 2A 00 00 00 44 64 6B 19 72 ED 12 19 98 EF F3 04 7B 00 00 00 00 00 00 00 00 ED 12 19 B0 F8 10 43 3D ED 12 19 B0 F8 11 30 25
         secs_since_1900 =
                 ((unsigned long long) rx_buf[78] << 24) |
                 ((unsigned long long) rx_buf[79] << 16) |
@@ -159,22 +159,22 @@ static void sendQuery() {
 
         OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_DLY, &err);
 
-        // Çå³ıÍ¬²½Íê³É
+        // æ¸…é™¤åŒæ­¥å®Œæˆ
         sendDisplayMessage(9);
         return;
     }
 }
 
 /*
- * ¼ì²éÁ¬½Ó×´Ì¬ AT+CWJAP?
- * Î´Á¬½Ó·µ»Ø   No AP
- * ÒÑÁ¬½Ó·µ»Ø   +CWJAP:"Yu","5a:41:44:0d:3d:7b",6,-19,0
+ * æ£€æŸ¥è¿æ¥çŠ¶æ€ AT+CWJAP?
+ * æœªè¿æ¥è¿”å›   No AP
+ * å·²è¿æ¥è¿”å›   +CWJAP:"Yu","5a:41:44:0d:3d:7b",6,-19,0
  */
 static void ntpSync() {
     OS_ERR err;
 
     if (gSysUnixTime != 0) {
-        // ÒÑ¾­Í¬²½Ê±¼ä
+        // å·²ç»åŒæ­¥æ—¶é—´
         return;
     }
 
@@ -194,7 +194,7 @@ static void ntpSync() {
 
     sendQuery();
 
-    // udp Á¬½ÓĞèÒª¹Ø±Õ£¬·ñÔòÓ°ÏìºóĞøµÄ tcp Á¬½Ó
+    // udp è¿æ¥éœ€è¦å…³é—­ï¼Œå¦åˆ™å½±å“åç»­çš„ tcp è¿æ¥
     sendDisplayMessage(12);
     if (sendATCmd("AT+CIPCLOSE\r\n", "OK", 6) != AT_OK) {
         return;
@@ -205,11 +205,11 @@ static void ntpSync() {
 }
 
 static const unsigned char str[] =
-        "GET /v1/forecast?latitude=23.0200&longitude=113.1200&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
+        "GET /v1/forecast?latitude=23.0122&longitude=113.1175&current_weather=true&timezone=Asia/Shanghai HTTP/1.1\n"
         "Host: api.open-meteo.com\n"
         "Connection: close\n\n\r\n";
 
-char temperature[16] = {};  // ´æ·ÅÎÂ¶È
+char temperature[16] = {};  // å­˜æ”¾æ¸©åº¦
 
 static void parseTemperature() {
     char *cw = strstr(rx_buf, "\"current_weather\"");
@@ -222,9 +222,9 @@ static void parseTemperature() {
         return;
     }
 
-    p += strlen("\"temperature\":"); // Ìø¹ı "temperature":
+    p += strlen("\"temperature\":"); // è·³è¿‡ "temperature":
 
-    // ¿½±´Êı×ÖÖ±µ½Óöµ½·ÇÊı×Ö¡¢Ğ¡Êıµã¡¢¸ººÅ
+    // æ‹·è´æ•°å­—ç›´åˆ°é‡åˆ°éæ•°å­—ã€å°æ•°ç‚¹ã€è´Ÿå·
     int i = 0;
     while ((*p == '-' || *p == '+' || *p == '.' || (*p >= '0' && *p <= '9')) && i < 15) {
         temperature[i++] = *p;
@@ -274,13 +274,13 @@ static void weather() {
         return;
     }
 
-    // ÒÑ¾­Á¬½Ó wifi
+    // å·²ç»è¿æ¥ wifi
     sendDisplayMessage(5);
     if (sendATCmd("AT+CIPSTART=\"TCP\",\"api.open-meteo.com\",80\r\n", "OK", 10) != AT_OK) {
         return;
     }
 
-    // ÉèÖÃÇëÇó³¤¶È
+    // è®¾ç½®è¯·æ±‚é•¿åº¦
     sendDisplayMessage(6);
     if (sendATCmd("AT+CIPSEND=150\r\n", ">", 6) != AT_OK) {
         return;
@@ -295,7 +295,7 @@ static void weather() {
 static void task() {
     OS_ERR err;
 
-    // ÔÚ OS Æô¶¯ºó²ÅÄÜ¿ªÆôÖĞ¶Ï£¬·ñÔò CPU Í³¼ÆÓĞÎÊÌâ
+    // åœ¨ OS å¯åŠ¨åæ‰èƒ½å¼€å¯ä¸­æ–­ï¼Œå¦åˆ™ CPU ç»Ÿè®¡æœ‰é—®é¢˜
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
     showTemperature("");
