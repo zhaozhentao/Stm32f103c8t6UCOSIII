@@ -209,8 +209,11 @@ static const unsigned char str[] =
         "Host: api.open-meteo.com\n"
         "Connection: close\n\n\r\n";
 
-char temperature[16] = {};  // 存放温度
-static uint32_t lastWeatherUpdateTime = 0;  // 上次更新天气的时间戳
+// 存放温度
+char temperature[16] = {};
+
+// 上次更新天气的时间戳
+static uint32_t lastWeatherUpdateTime = 0;
 
 static void parseTemperature() {
     char *cw = strstr(rx_buf, "\"current_weather\"");
@@ -273,16 +276,9 @@ static void weather() {
     currentTime = gSysUnixTime;
 
     // 如果系统时间未同步，不更新天气
-    if (currentTime == 0) {
+    // 最后一次更新时间小于 5 分钟，不更新天气
+    if (currentTime == 0 || (lastWeatherUpdateTime != 0 && currentTime - lastWeatherUpdateTime < UPDATE_INTERVAL)) {
         return;
-    }
-
-    // 检查是否需要更新（首次更新或距离上次更新超过5分钟）
-    if (lastWeatherUpdateTime != 0) {
-        uint32_t elapsed = currentTime - lastWeatherUpdateTime;
-        if (elapsed < UPDATE_INTERVAL) {
-            return;
-        }
     }
 
     if (checkNetwork() != AT_OK) {
