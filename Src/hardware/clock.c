@@ -1,14 +1,17 @@
+#include "main.h"
 #include "stm32f1xx_hal.h"
 #include "error_handle.h"
 
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
     // 1. 配置外部高速时钟（HSE）和PLL
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
     RCC_OscInitStruct.HSEState = RCC_HSE_ON;                    // 启用外部8MHz晶振
     RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;     // HSE不分频
+    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;                // 启用PLL
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;        // PLL源=HSE
     RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;                // HSE×9=72MHz（核心）
@@ -27,6 +30,12 @@ void SystemClock_Config(void) {
     // 3. 应用时钟配置（72MHz下必须设置FLASH_LATENCY_2）
     // ❗ 这是最容易忽略的点，不设置会导致系统不稳定/卡死
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
+        Error_Handler();
+    }
+
+    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB;
+    PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
         Error_Handler();
     }
 
